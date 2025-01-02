@@ -1,0 +1,11 @@
+{
+    "name": "ManageInstitusi",
+    "alias": "manageinstitusi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageInstitusi\\Providers\\ManageInstitusiServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "ManageUserGuide",
+    "alias": "manageuserguide",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageUserGuide\\app\\Providers\\ManageUserGuideServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,11 @@
+{
+    "name": "ManageFixaset",
+    "alias": "managefixaset",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageFixaset\\app\\Providers\\ManageFixasetServiceProvider"
+    ],
+    "files": []
+}

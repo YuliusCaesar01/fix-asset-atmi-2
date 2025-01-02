@@ -1,0 +1,11 @@
+{
+    "name": "ManagePermintaanFA",
+    "alias": "managepermintaanfa",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManagePermintaanFA\\app\\Providers\\ManagePermintaanFAServiceProvider"
+    ],
+    "files": []
+}

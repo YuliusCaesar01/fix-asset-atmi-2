@@ -1,0 +1,31 @@
+{
+    "name": "nwidart/managepermintaannfa",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ManagePermintaanNFA\\": "",
+            "Modules\\ManagePermintaanNFA\\App\\": "app/",
+            "Modules\\ManagePermintaanNFA\\Database\\Factories\\": "database/factories/",
+            "Modules\\ManagePermintaanNFA\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ManagePermintaanNFA\\Tests\\": "tests/"
+        }
+    }
+}

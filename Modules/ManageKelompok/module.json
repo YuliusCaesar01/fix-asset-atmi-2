@@ -1,0 +1,11 @@
+{
+    "name": "ManageKelompok",
+    "alias": "managekelompok",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageKelompok\\Providers\\ManageKelompokServiceProvider"
+    ],
+    "files": []
+}

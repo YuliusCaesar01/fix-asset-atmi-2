@@ -1,0 +1,11 @@
+{
+    "name": "ManageDivisi",
+    "alias": "managedivisi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageDivisi\\Providers\\ManageDivisiServiceProvider"
+    ],
+    "files": []
+}

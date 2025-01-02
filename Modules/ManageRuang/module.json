@@ -1,0 +1,11 @@
+{
+    "name": "ManageRuang",
+    "alias": "manageruang",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageRuang\\Providers\\ManageRuangServiceProvider"
+    ],
+    "files": []
+}

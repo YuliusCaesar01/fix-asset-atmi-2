@@ -1,0 +1,188 @@
+  /* CSS untuk panah */
+  .nav-link .right {
+    transition: transform 0.3s ease;
+}
+
+
+.nav-link.active .right {
+    transform: rotate(90deg); /* Putar panah ke arah bawah */
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-2px); }
+    50% { transform: translateX(2px); }
+    75% { transform: translateX(-2px); }
+    100% { transform: translateX(0); }
+}
+
+.shake {
+    animation: shake 0.5s ease-in-out;
+}
+#profile-view {
+display: none; /* Hide profile view by default */
+background-color: #f4f6f9;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+
+.profile-header {
+    display: flex;
+    justify-content: flex-start;
+    margin-bottom: 20px;
+}
+
+.profile-info {
+    text-align: center;
+}
+
+.profile-info img {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+}
+
+#back-to-navbar {
+    margin-right: auto;
+}
+
+.hidden-sidebar {
+display: none; /* Hide the sidebar */
+}
+
+.main-sidebar {
+display: block; /* Ensure the sidebar is displayed by default */
+transition: opacity 0.3s ease; /* Smooth transition */
+}
+.user-panel {
+display: flex;
+align-items: center;
+justify-content: center;
+padding: 10px;
+}
+
+.image {
+display: flex;
+align-items: center;
+justify-content: center;
+}
+
+.profile-info img {
+width: 150px;
+height: 150px;
+border-radius: 50%;
+object-fit: cover; /* Ensure the image covers the area */
+object-position: top; /* Position the image from the top */
+margin-bottom: 20px; /* Space between the photo and profile details */
+}
+
+.info {
+margin-left: 10px;
+text-align: center;
+}
+#profile-view {
+background-color: #f4f6f9;
+padding: 20px;
+border-radius: 8px;
+box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+width: 100%; /* Adjust as needed */
+margin: auto; /* Center the profile view */
+text-align: center; /* Center the text and button */
+}
+
+.profile-header {
+margin-bottom: 20px;
+}
+
+.profile-info {
+display: flex;
+flex-direction: column;
+align-items: center;
+justify-content: center;
+}
+
+.profile-img {
+    width: 150px; /* Adjust size as needed */
+    height: 150px;
+    border-radius: 50%; /* This makes the image circular */
+    object-fit: cover; /* Ensure the image covers the area */
+    object-position: top; /* Position the image from the top */
+    margin-bottom: 20px; /* Space between the photo and profile details */
+}
+
+
+.profile-details {
+display: flex;
+flex-direction: column;
+align-items: center;
+}
+
+.profile-details h3,
+.profile-details p {
+margin: 5px 0; /* Adjust spacing between text */
+}
+
+/* Gaya umum untuk tombol dengan ikon */
+.btn-icon {
+display: inline-flex;
+align-items: center;
+justify-content: center;
+font-size: 16px; /* Ukuran ikon */
+width: 22px; /* Lebar tombol */
+height: 22px; /* Tinggi tombol */
+padding: 0; /* Hapus padding */
+border: none;
+border-radius: 50%; /* Bentuk bulat */
+background-color: #007bff; /* Warna latar belakang tombol */
+color: #ffffff; /* Warna ikon */
+cursor: pointer;
+transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Gaya untuk tombol ikon primer */
+.btn-icon-primary {
+background-color: #007bff;
+}
+
+.btn-icon-primary:hover {
+background-color: #0056b3;
+}
+
+/* Gaya untuk tombol ikon edit */
+.btn-icon-edit {
+background-color: #28a745;
+}
+
+.btn-icon-edit:hover {
+background-color: #218838;
+}
+
+/* Gaya untuk tombol ikon dengan latar belakang flat */
+.btn-icon-flat {
+background-color: #f8f9fa;
+color: #343a40;
+}
+
+.btn-icon-flat:hover {
+background-color: #e2e6ea;
+}
+
+/* Gaya untuk ikon */
+.btn-icon i {
+font-size: 12px; /* Ukuran ikon */
+}
+
+@media (max-width: 768px) {
+.btn {
+    padding: 4px 10px; /* Padding lebih kecil pada perangkat mobile */
+    font-size: 12px; /* Ukuran font lebih kecil pada perangkat mobile */
+}
+
+.profile-img {
+    width: 120px;
+    height: 120px;
+}
+}
+

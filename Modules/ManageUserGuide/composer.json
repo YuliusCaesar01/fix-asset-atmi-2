@@ -1,0 +1,31 @@
+{
+    "name": "nwidart/manageuserguide",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\ManageUserGuide\\": "",
+            "Modules\\ManageUserGuide\\App\\": "app/",
+            "Modules\\ManageUserGuide\\Database\\Factories\\": "database/factories/",
+            "Modules\\ManageUserGuide\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\ManageUserGuide\\Tests\\": "tests/"
+        }
+    }
+}

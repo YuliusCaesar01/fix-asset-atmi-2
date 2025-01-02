@@ -1,0 +1,11 @@
+{
+    "name": "ManageJenis",
+    "alias": "managejenis",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageJenis\\Providers\\ManageJenisServiceProvider"
+    ],
+    "files": []
+}

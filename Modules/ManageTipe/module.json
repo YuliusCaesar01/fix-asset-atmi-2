@@ -1,0 +1,11 @@
+{
+    "name": "ManageTipe",
+    "alias": "managetipe",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManageTipe\\Providers\\ManageTipeServiceProvider"
+    ],
+    "files": []
+}

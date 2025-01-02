@@ -1,0 +1,11 @@
+{
+    "name": "ManagePermintaanNFA",
+    "alias": "managepermintaannfa",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\ManagePermintaanNFA\\app\\Providers\\ManagePermintaanNFAServiceProvider"
+    ],
+    "files": []
+}

@@ -1,0 +1,19 @@
+{
+    "UserProfile": true,
+    "Dashboard": true,
+    "Department": true,
+    "ManageUser": true,
+    "ManageInstitusi": true,
+    "ManageDevisi": true,
+    "ManageTipe": true,
+    "ManageJenis": true,
+    "ManageKelompok": true,
+    "ManageDivisi": true,
+    "ManageLokasi": true,
+    "ManageRuang": true,
+    "ManageAset": true,
+    "ManagePermintaanFA": true,
+    "ManageFixaset": true,
+    "ManagePermintaanNFA": true,
+    "ManageUserGuide": true
+}
