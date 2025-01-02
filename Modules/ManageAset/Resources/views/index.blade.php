@@ -34,6 +34,105 @@
                         <div class="card-header">
                             <h3 class="card-title">Semua Aset Tetap (Fixed Asset)</h3>
                         </div>
+                        <div class="card p-4 mb-4">
+                            <form method="GET" action="{{ route('manageaset.index') }}" class="row g-3" id="filterForm">
+                                <!-- Location Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_lokasi" class="form-label fw-bold">Lokasi</label>
+                                        <select name="id_lokasi" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Lokasi --</option>
+                                            @foreach ($lokasi as $lok)
+                                                <option value="{{ $lok->id_lokasi }}" {{ request('id_lokasi') == $lok->id_lokasi ? 'selected' : '' }}>
+                                                    {{ $lok->nama_lokasi_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Institution Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_institusi" class="form-label fw-bold">Institusi</label>
+                                        <select name="id_institusi" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Institusi --</option>
+                                            @foreach ($institusi as $ins)
+                                                <option value="{{ $ins->id_institusi }}" {{ request('id_institusi') == $ins->id_institusi ? 'selected' : '' }}>
+                                                    {{ $ins->nama_institusi }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Group Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_kelompok" class="form-label fw-bold">Kelompok</label>
+                                        <select name="id_kelompok" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Kelompok --</option>
+                                            @foreach ($kelompok as $kel)
+                                                <option value="{{ $kel->id_kelompok }}" {{ request('id_kelompok') == $kel->id_kelompok ? 'selected' : '' }}>
+                                                    {{ $kel->nama_kelompok_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Category Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_jenis" class="form-label fw-bold">Jenis</label>
+                                        <select name="id_jenis" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Jenis --</option>
+                                            @foreach ($jenis as $jen)
+                                                <option value="{{ $jen->id_jenis }}" {{ request('id_jenis') == $jen->id_jenis ? 'selected' : '' }}>
+                                                    {{ $jen->nama_jenis_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+                                <!-- Room Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_ruang" class="form-label fw-bold">Ruang</label>
+                                        <select name="id_ruang" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Ruang --</option>
+                                            @foreach ($ruang as $ru)
+                                                <option value="{{ $ru->id_ruang }}" {{ request('id_ruang') == $ru->id_ruang ? 'selected' : '' }}>
+                                                    {{ $ru->nama_ruang_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                        
+                                <!-- Type Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_tipe" class="form-label fw-bold">Tipe</label>
+                                        <select name="id_tipe" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Tipe --</option>
+                                            @foreach ($tipe as $tip)
+                                                <option value="{{ $tip->id_tipe }}" {{ request('id_tipe') == $tip->id_tipe ? 'selected' : '' }}>
+                                                    {{ $tip->nama_tipe_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                
+                                <!-- Reset Button -->
+                                <div class="col-12 mt-3">
+                                    <button type="button" class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
+                                </div>
+                            </form>
+                        </div>
+                        
                         <div class="card-body">
                            
                             <table id="tbl_permintaanfa" class="table table-striped table-sm" id="tbl_fa">
@@ -138,6 +237,20 @@
     <!-- InputMask -->
     <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
     <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+    <script>
+        function resetFilters() {
+            // Get all select elements in the form
+            const selects = document.querySelectorAll('#filterForm select');
+            
+            // Reset each select to its first option
+            selects.forEach(select => {
+                select.selectedIndex = 0;
+            });
+            
+            // Submit the form to refresh the page with cleared filters
+            document.getElementById('filterForm').submit();
+        }
+        </script>
     <script>
         $(document).ready(function() {
             //button create post event

@@ -1,6 +1,22 @@
 @extends('layouts.layout_main')
 @section('title', 'Data Detail Aset Tetap')
 @section('content')
+<style>
+    .gap-2 {
+        gap: 0.5rem;
+    }
+    
+    #qrcode {
+        display: block;
+        margin: 0 auto;
+    }
+    
+    @media (max-width: 768px) {
+        .col-md-6 {
+            margin-bottom: 1rem;
+        }
+    }
+    </style>
     <!-- Content Wrapper. Contains page content -->
     <div class="content-wrapper">
         <div class="content-header">
@@ -73,33 +89,42 @@
                             </dl>
                         </div>
                         
+                        
                     </div>
         
                     <!-- QR Code Section -->
                     <form action="{{ route('generate.qrcode', ['kode_fa' => $fa->kode_fa]) }}" method="get">
                         <div class="row mt-4">
-                            <div class="col-12 text-center">
-                                <div class="qr-code-container">
-                                    <input type="hidden" name="kode_fa" value="{{ $fa->kode_fa }}">
-
-                                    <center>
-                                        <img src="data:image/png;base64,{{ $barcode }}" alt="QR Code" id="qrcode">
-                                    </center>
-                                    <div class="button-group">
-                                        <div class="form-group">
-                                            <label for="unit">Print Salah Satu Unit:</label>
-                                            <select class="form-control" id="unit" name="unit">
-                                                @for ($i = 1; $i <= $fa->jumlah_unit; $i++)
-                                                    <option value="{{ $i }}">Unit {{ $i }}</option>
-                                                @endfor
-                                            </select>
+                            <div class="col-12">
+                                <div class="card">
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <!-- QR Code Column -->
+                                            <div class="col-md-6 text-center">
+                                                <input type="hidden" name="kode_fa" value="{{ $fa->kode_fa }}">
+                                                <img src="data:image/png;base64,{{ $barcode }}" alt="QR Code" id="qrcode" style="max-width: 200px; height: auto; margin: 1rem auto;">
+                                            </div>
+                                            
+                                            <!-- Print Controls Column -->
+                                            <div class="col-md-6">
+                                                <div class="form-group mb-3">
+                                                    <label for="unit" class="form-label">Print Salah Satu Unit:</label>
+                                                    <select class="form-control mb-3" id="unit" name="unit">
+                                                        @for ($i = 1; $i <= $fa->jumlah_unit; $i++)
+                                                            <option value="{{ $i }}">Unit {{ $i }}</option>
+                                                        @endfor
+                                                    </select>
+                                                </div>
+                                                <div class="d-flex gap-2">
+                                                    <button type="submit" name="action" value="single" class="btn btn-primary">
+                                                        <i class="fa fa-print"></i> Print Unit
+                                                    </button>
+                                                    <button type="submit" name="action" value="all" class="btn btn-primary">
+                                                        <i class="fa fa-print"></i> Print All
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <button type="submit" name="action" value="single" class="btn btn-primary">
-                                            <i class="fa fa-print"></i> Print Unit
-                                        </button>
-                                        <button type="submit" name="action" value="all" class="btn btn-primary">
-                                            <i class="fa fa-print"></i> Print All
-                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -35,6 +35,9 @@ class ManageAsetController extends Controller
         $institusi = Institusi::where('id_institusi', '!=', 8)->get();
         $tipe = Tipe::all();
         $lokasi = Lokasi::all();
+        $kelompok = Kelompok::all();
+        $jenis = Jenis::all();
+        $ruang = Ruang::all();
 
         $query = FixedAsset::query();
         if ($request) {
@@ -72,7 +75,7 @@ class ManageAsetController extends Controller
         }
 
 
-        return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi'), ['menu' => $this->menu])->with('success', 'Data berhasil ditambahkan!');
+        return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang'), ['menu' => $this->menu])->with('success', 'Data berhasil ditambahkan!');
     }
 
     public function detail($kode_fa)
