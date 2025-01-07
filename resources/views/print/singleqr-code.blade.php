@@ -1,30 +1,31 @@
-<div class="content-wrapper" style="display: flex; justify-content: center; align-items: center; height: 100vh;">
-    <div class="content" style="width: 100%; display: flex; justify-content: center; align-items: center;">
-        <div class="container-fluid">
-            <div class="row justify-content-center">
-                <!-- Card for QR Code and Description -->
-                <div class="col-md-6 mb-4" style="display: flex; justify-content: center; align-items: center;">
-                    <div class="card" style="display: flex; flex-direction: row; border: 1px solid #ddd; border-radius: 8px; padding: 10px; max-width: 7.8in; width: 100%; height: 1.6in; margin: 0 auto; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);">
+<div class="content-wrapper">
+    <div class="content">
+        <div class="container">
+            <div class="card-grid">
+                <div class="col-12">
+                    <div class="card">
                         <!-- QR Code Section -->
-                        <div class="qr-code " style="flex-shrink: 0; width: 1.8in; height: 1.6in; margin-right: 22px; display: flex; justify-content: center; align-items: center; overflow: hidden;">
-                            <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code" style="width: 100%; height: auto; object-fit: contain;">
+                        <div class="qr-code">
+                            <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code">
                         </div>
 
                         <!-- Text Description Section -->
-                        <div class="description" style="flex-grow: 1; display: flex; flex-direction: column; justify-content: space-between; line-height: 1.2;">
-                            <p style="font-size: 0.85rem; margin: 0;"><b>{{ $asset->nama_barang }}</b></p>
-                            <p style="font-size: 0.85rem; margin: 0;"><b>Unit ke&nbsp;{{ $unitke }}</b></p>
+                        <div class="info">
+                            <div class="title">Unit ke {{ $unitke }}</div>
+                            
+                            <div class="details">
+                                <div>
+                                    Kode FA: 
+                                    <span class="badge">{{ $kodebaru }}</span>
+                                </div>
 
-                            <p style="font-size: 0.75rem; margin: 0; text-align: left;">
-                                <b>Kode FA :</b> <span class="badge bg-info fs-7" style="font-weight: bold; padding: 2px 8px; border-radius: 5px;">{{ $kodebaru }}</span><br>
-                                <b>Lokasi :</b> <span>{{ $asset->lokasi->nama_lokasi_yayasan }}</span><br>
-                                <b>Unit :</b> <span>{{ $asset->Institusi->nama_institusi }}</span><br>
-                                <b>Kelompok :</b> <span>{{ $asset->Kelompok->nama_kelompok_yayasan }}</span><br>
-                                <b>Jenis :</b> <span>{{ $asset->Jenis->nama_jenis_yayasan }}</span><br>
-                                <b>Ruang :</b> <span>{{ $asset->Ruang->nama_ruang_yayasan }}</span><br>
-                                <b>Type :</b> <span>{{ $asset->Tipe->nama_tipe_yayasan }}</span><br>
-                            </p>
-                            <p class="text-muted" style="font-size: 0.65rem; margin: 0;">{{ $asset->deskripsi_barang }}</p>
+                                <div>Lokasi: <span>{{ $asset->lokasi->nama_lokasi_yayasan }}</span></div>
+                                <div>Unit: <span>{{ $asset->Institusi->nama_institusi }}</span></div>
+                                <div>Kelompok: <span>{{ $asset->Kelompok->nama_kelompok_yayasan }}</span></div>
+                                <div>Jenis: <span>{{ $asset->Jenis->nama_jenis_yayasan }}</span></div>
+                                <div>Ruang: <span>{{ $asset->Ruang->nama_ruang_yayasan }}</span></div>
+                                <div>Type: <span>{{ $asset->Tipe->nama_tipe_yayasan }}</span></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -33,63 +34,104 @@
     </div>
 </div>
 
-
-<!-- Print-specific CSS -->
 <style>
-      @page {
-            size: legal; /* Set paper size to legal */
-            margin: 0; /* Optional: Set margin to 0 for full-page printing */
-        }
+    @page {
+        size: A4;
+        margin: 0.5in;
+    }
+
+    body {
+        margin: 0;
+        padding: 0;
+    }
+
+    .content-wrapper {
+        width: 100%;
+        padding: 0;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+
+    .card {
+        display: flex;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 10px;
+        background: white;
+        height: 120px;
+        page-break-inside: avoid;
+    }
+
+    .qr-code {
+        width: 100px;
+        height: 100px;
+        margin-right: 10px;
+    }
+
+    .qr-code img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
+
+    .info {
+        flex: 1;
+        font-size: 11px;
+        line-height: 1.2;
+    }
+
+    .title {
+        font-weight: bold;
+        margin-bottom: 4px;
+    }
+
+    .details div {
+        margin-bottom: 2px;
+    }
+
+    .badge {
+        background-color: #17a2b8;
+        color: white;
+        padding: 1px 4px;
+        border-radius: 3px;
+        font-size: 10px;
+    }
+
+    .card-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+        width: 100%;
+    }
+
     @media print {
-        body {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
         }
 
-        .content-wrapper {
-            display: block;
-            text-align: center;
-            width: 100%;
-            height: auto;
-            margin: 0;
-            page-break-inside: avoid;  /* Avoid page break inside */
-        }
-        .container-fluid {
-            display: inline-block;
-            width: auto;
-        }
         .card {
-            display: flex;
-            flex-direction: row;
-            margin: 0 auto;
-            box-shadow: none;
-            width: 7.8in;
-            height: 1.6in;
+            break-inside: avoid;
+            page-break-inside: avoid;
         }
-        .qr-code {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            width: 1.8in;
-            height: 100%;  /* Ensure it fills the height of the card */
-            margin-right: 12px;
-        }
-        .btn-primary {
-            display: none; /* Hide print button when printing */
+
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
     }
 </style>
 
-<!-- Auto Print PDF Logic -->
 <script>
     window.onload = function() {
-        window.print(); // Automatically trigger the print dialog when the page loads
-        
-        // Event listener untuk kembali ke halaman sebelumnya setelah dialog print selesai
+        window.print();
         window.onafterprint = function() {
-            window.history.back(); // Go back to the previous page
+            window.history.back();
         };
     };
 </script>

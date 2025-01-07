@@ -31,52 +31,53 @@ class ManageAsetController extends Controller
     protected $menu = 'Aset';
 
     public function index(Request $request)
-    {
-        $institusi = Institusi::where('id_institusi', '!=', 8)->get();
-        $tipe = Tipe::all();
-        $lokasi = Lokasi::all();
-        $kelompok = Kelompok::all();
-        $jenis = Jenis::all();
-        $ruang = Ruang::all();
+{
+    $institusi = Institusi::where('id_institusi', '!=', 8)->get();
+    $tipe = Tipe::all();
+    $lokasi = Lokasi::all();
+    $kelompok = Kelompok::all();
+    $jenis = Jenis::all();
+    $ruang = Ruang::all();
 
-        $query = FixedAsset::query();
-        if ($request) {
-            //aset where request
-            if ($request->nama_barang) {
-                $query->orWhere('nama_barang', 'LIKE', '%' . $request->nama_barang . '%');
-            }
-            if ($request->id_institusi) {
-                $query->orWhere('id_institusi', $request->id_institusi);
-            }
-            if ($request->id_divisi) {
-                $query->orWhere('id_divisi', $request->id_divisi);
-            }
-            if ($request->id_tipe) {
-                $query->orWhere('id_tipe', $request->id_tipe);
-            }
-            if ($request->id_jenis) {
-                $query->orWhere('id_jenis', $request->id_jenis);
-            }
-            if ($request->id_kelompok) {
-                $query->orWhere('id_kelompok', $request->id_kelompok);
-            }
-            if ($request->id_lokasi) {
-                $query->orWhere('id_lokasi', $request->id_lokasi);
-            }
-            if ($request->id_ruang) {
-                $query->orWhere('id_ruang', $request->id_ruang);
-            }
-            if ($request->tahun_diterima) {
-                $query->orWhere('tahun_diterima', $request->tahun_diterima);
-            }
-            $aset = $query->orderBy('kode_fa')->get();
-        } else {
-            $aset = $query->where('tahun_diterima', '>=', now()->subYears(10)->year)->orderBy('kode_fa')->get();
-        }
+    $query = FixedAsset::query();
 
-
-        return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang'), ['menu' => $this->menu])->with('success', 'Data berhasil ditambahkan!');
+    // Apply filters if present
+    if ($request->filled('nama_barang')) {
+        $query->where('nama_barang', 'LIKE', '%' . $request->nama_barang . '%');
     }
+    if ($request->filled('id_institusi')) {
+        $query->where('id_institusi', $request->id_institusi);
+    }
+    if ($request->filled('id_divisi')) {
+        $query->where('id_divisi', $request->id_divisi);
+    }
+    if ($request->filled('id_tipe')) {
+        $query->where('id_tipe', $request->id_tipe);
+    }
+    if ($request->filled('id_jenis')) {
+        $query->where('id_jenis', $request->id_jenis);
+    }
+    if ($request->filled('id_kelompok')) {
+        $query->where('id_kelompok', $request->id_kelompok);
+    }
+    if ($request->filled('id_lokasi')) {
+        $query->where('id_lokasi', $request->id_lokasi);
+    }
+    if ($request->filled('id_ruang')) {
+        $query->where('id_ruang', $request->id_ruang);
+    }
+    if ($request->filled('tahun_diterima')) {
+        $query->where('tahun_diterima', $request->tahun_diterima);
+    }
+
+    // Fetch data
+    $aset = $query->orderBy('kode_fa')->get();
+
+    return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang'), [
+        'menu' => $this->menu
+    ])->with('success', 'Data berhasil ditambahkan!');
+}
+
 
     public function detail($kode_fa)
     {
