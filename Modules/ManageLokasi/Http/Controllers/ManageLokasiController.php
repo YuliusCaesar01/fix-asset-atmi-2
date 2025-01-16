@@ -2,12 +2,13 @@
 
 namespace Modules\ManageLokasi\Http\Controllers;
 
-use App\Models\Lokasi;
+use Log;
 use App\Models\Ruang;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\Lokasi;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Support\Renderable;
 
 class ManageLokasiController extends Controller
 {
@@ -45,56 +46,79 @@ class ManageLokasiController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-    {
+{
+    try {
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
-            'nama_lokasi' => 'required|string|unique:lokasis,nama_lokasi_yayasan',
+            'nama_lokasi_yayasan' => 'required|string|unique:lokasis,nama_lokasi_yayasan',
             'keterangan_lokasi' => 'required|string',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
+            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'nama_lokasi_yayasan.required' => 'Nama lokasi harus diisi',
+            'nama_lokasi_yayasan.unique' => 'Nama lokasi sudah ada',
+            'keterangan_lokasi.required' => 'Keterangan lokasi harus diisi',
+            'image.image' => 'File harus berupa gambar',
+            'image.mimes' => 'Format gambar harus jpeg, png, jpg, atau gif',
+            'image.max' => 'Ukuran gambar maksimal 2MB',
         ]);
-    
+
         // Check if validation fails
         if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput(); // Redirect back with errors and input
+            return response()->json([
+                'success' => false,
+                'errors' => $validator->errors()
+            ], 422);
         }
-    
+
+        // Get next ID
         $idToUse = Lokasi::max('id_lokasi') + 1;
-    
-     
-    
-         // Handle image upload
-         if ($request->hasFile('image')) {
+        
+        // Generate kode_lokasi
+        $kodeLokasi = str_pad($idToUse, 2, '0', STR_PAD_LEFT);
+        
+        // Initialize image path as null
+        $imagePath = null;
+
+        // Handle image upload if present
+        if ($request->hasFile('image')) {
             $image = $request->file('image');
-            $imageName = 'image_' . time() . '.' . $image->getClientOriginalExtension();
-            $imagePath = public_path('foto/fixasetlist/' . $imageName); // Set the path
-    
-            // Move the uploaded file to the specified path
+            $imageName = 'lokasi_' . time() . '_' . $kodeLokasi . '.' . $image->getClientOriginalExtension();
+            
+            // Move the uploaded file
             $image->move(public_path('foto/fixasetlist'), $imageName);
+            
+            // Store the relative path
+            $imagePath = 'foto/fixasetlist/' . $imageName;
         }
-    
-    
-        // Create a new location record
+
+        // Create the location record
         $lokasi = Lokasi::create([
             'id_lokasi' => $idToUse,
-            'nama_lokasi_yayasan' => $request->nama_lokasi,
+            'nama_lokasi_yayasan' => $request->nama_lokasi_yayasan,
             'keterangan_lokasi' => $request->keterangan_lokasi,
-            'kode_lokasi' => '', // Temporary default value
-            'foto_lokasi' => $imagePath // Ensure the database column exists
-        ]);
-    
-        // Generate kode_lokasi based on the ID
-        $kodeLokasi = str_pad($lokasi->id_lokasi, 2, '0', STR_PAD_LEFT); // Pad with leading zeros if needed
-    
-        // Update the record with the generated kode_lokasi
-        $lokasi->update([
             'kode_lokasi' => $kodeLokasi,
+            'foto_lokasi' => $imagePath
         ]);
-    
-        // Redirect back with a success message
-        return redirect()->back()->with('success', 'Data lokasi telah ditambahkan!');
-    }
-    
 
+        // Return success response
+        return response()->json([
+            'success' => true,
+            'message' => 'Data lokasi berhasil ditambahkan',
+            'data' => $lokasi
+        ], 200);
+
+    } catch (\Exception $e) {
+        // Log the error
+        Log::error('Error in store method: ' . $e->getMessage());
+        
+        // Return error response
+        return response()->json([
+            'success' => false,
+            'message' => 'Terjadi kesalahan pada server',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+}
     
     /**
      * Show the specified resource.

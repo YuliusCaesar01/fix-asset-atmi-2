@@ -66,6 +66,21 @@
                                     </div>
                                 </div>
 
+                                <!-- Room Filter -->
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="id_ruang" class="form-label fw-bold">Ruang</label>
+                                        <select name="id_ruang" class="form-select" onchange="this.form.submit()">
+                                            <option value="">-- Pilih Ruang --</option>
+                                            @foreach ($ruang as $ru)
+                                                <option value="{{ $ru->id_ruang }}" {{ request('id_ruang') == $ru->id_ruang ? 'selected' : '' }}>
+                                                    {{ $ru->nama_ruang_yayasan }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+                                
                                 <!-- Group Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
@@ -96,20 +111,7 @@
                                     </div>
                                 </div>
 
-                                <!-- Room Filter -->
-                                <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label for="id_ruang" class="form-label fw-bold">Ruang</label>
-                                        <select name="id_ruang" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Ruang --</option>
-                                            @foreach ($ruang as $ru)
-                                                <option value="{{ $ru->id_ruang }}" {{ request('id_ruang') == $ru->id_ruang ? 'selected' : '' }}>
-                                                    {{ $ru->nama_ruang_yayasan }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
+                                
                         
                                 <!-- Type Filter -->
                                 <div class="col-md-4">
