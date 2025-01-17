@@ -4,15 +4,13 @@
             <div class="card-grid">
                 @foreach ($assets as $asset)
                     <div class="card">
-                        <!-- QR Code Section -->
                         <div class="qr-code">
                             <img src="data:image/png;base64,{{ $asset['qrCode'] }}" alt="QR Code">
                         </div>
-                        <!-- Text Section -->
                         <div class="info">
                             <div class="title">Unit ke {{ $asset['unitke'] }}</div>
                             <div class="details">
-                                <div class="code">Kode FA: <span class="badge">{{ $asset['kodebaru'] }}</span></div>
+                                <div>Kode FA: {{ $asset['kodebaru'] }}</div>
                                 <div>Lokasi: {{ $fa->lokasi->nama_lokasi_yayasan }}</div>
                                 <div>Unit: {{ $fa->Institusi->nama_institusi }}</div>
                                 <div>Kelompok: {{ $fa->Kelompok->nama_kelompok_yayasan }}</div>
@@ -30,115 +28,124 @@
 
 <style>
     @page {
-    size: A4;
-    margin: 5mm;
-}
+        size: 70mm 50mm; /* Set page size to 5mm x 7mm */
+        margin: 0; /* Remove all margins */
+    }
 
-body {
-    margin: 0;
-    padding: 0;
-}
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        width: 70mm;
+        height: 50mm;
+        font-weight: bold;
+    }
 
-.content-wrapper {
-    width: 100%;
-    padding: 0;
-}
+    .content-wrapper {
+        width: 70mm;
+        height: 50mm;
+        padding: 0;
+    }
 
-.container {
-    width: 100%;
-    max-width: 100%;
-    margin: 0 auto;
-}
+    .container {
+        width: 70mm;
+        height: 50mm;
+        margin: 0;
+        padding: 0;
+    }
 
-.card-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 5mm;
-    width: 100%;
-}
+    .card-grid {
+        display: block;
+        width: 70mm;
+        height: 50mm;
+    }
 
-.card {
+    .card {
     display: flex;
-    flex-direction: row;
-    border: 1px solid #ddd;
-    border-radius: 2mm;
-    padding: 2mm;
+    flex-direction: row; /* Change to row layout for horizontal alignment */
+    justify-content: space-between; /* Add space between QR code and text */
+    align-items: center; /* Center-align items vertically */
+    border: none;
+    padding: 0;
     background: white;
-    width: 70mm;  /* 7cm length */
-    height: 50mm; /* 5cm width */
-    page-break-inside: avoid;
-    align-items: center; /* Centers content vertically */
+    width: 70mm;
+    height: 50mm;
+    page-break-after: always;
 }
 
 .qr-code {
-    width: 75mm;
-    height: 75mm;
-    margin-right: 5mm;
+    width: 30mm;  /* Adjust QR code width */
+    height: 30mm; /* Adjust QR code height */
+    margin-left: 2mm; /* Add some space from the edge */
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
-.qr-code img {
-    width: 130%;
-    height: 130%;
-    object-fit: contain;
-}
+    .qr-code img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+    }
 
-.info {
-    flex: 1;
-    font-size: 8pt;
+    .info {
+    font-size: 6.5pt;
     line-height: 1.2;
-    display: flex;
-    flex-direction: column;
-    justify-content: center; /* Centers content vertically */
-    height: 100%;
+    text-align: left; /* Align text to the left */
+    margin-left: 2mm; /* Add spacing between QR code and text */
+    width: 45mm; /* Adjust width to fit the remaining space */
 }
 
 .title {
     font-weight: bold;
-    margin-bottom: 1mm;
-    font-size: 9pt;
+    margin-bottom: 0.5mm;
+    font-size: 6.5pt;
 }
 
 .details div {
-    margin-bottom: 1mm;
+    margin-bottom: 0.2mm;
     white-space: nowrap;
-    overflow: hidden;
     text-overflow: ellipsis;
+    font-size: 6.5pt;
 }
 
-.badge {
-    background-color: #17a2b8;
-    color: white;
-    padding: 0.5mm 1mm;
-    border-radius: 1mm;
-    font-size: 8pt;
-}
+    @media print {
+        .card {
+            break-after: page;
+            page-break-after: always;
+        }
 
-@media print {
-    .card-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 5mm;
+        body {
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
+        }
     }
-
-    .card {
-        break-inside: avoid;
-        page-break-inside: avoid;
-    }
-
-    body {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-    }
-}
 </style>
 
 <script>
+    function setPageSize(size) {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            @page {
+                size: ${size};
+                margin: 0; /* Remove margins for exact fit */
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+
     window.onload = function() {
+        // Set the desired page size to 5mm x 7mm
+        setPageSize('70mm 50mm');
+
+        // Trigger the print function
         window.print();
+
+        // Go back to the previous page after printing
         window.onafterprint = function() {
             window.history.back();
         };
     };
 </script>
+
+
