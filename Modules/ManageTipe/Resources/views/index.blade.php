@@ -32,7 +32,17 @@
                                 <div class="col-6">
                                     <h5 class="m-0">Tipe</h5>
                                 </div>
-                              
+                                <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
+                                    <span>Pilih Kelompok:</span>
+                                    <select class="form-control form-control-sm" id="mode-selector">
+                                        <option value="tanah">Tanah</option>
+                                        <option value="bangunan">Bangunan</option>
+                                        <option value="mesin">Mesin</option>
+                                        <option value="kendaraan">Kendaraan</option>
+                                        <option value="komputer">Komputer</option>
+                                        <option value="inventaris">Inventaris</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                         <div class="card-body">
@@ -176,6 +186,23 @@
 
 @section('scripttambahan')
 <script>
+   $(document).ready(function() {
+        // Filter function for manage tipe
+        $('#mode-selector').change(function() {
+            let selectedMode = $(this).val().toLowerCase().trim();
+        
+            $('#tbl_tipe tbody tr').each(function() {
+                let namaKelompok = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+                if (selectedMode === '' || namaKelompok === selectedMode) {
+                    $(this).show();
+                } else {
+                    $(this).hide();
+                }
+        });
+    });
+});
+</script>
+<script>
     $(document).ready(function() {
         // Function to initialize DataTable
         function initializeDataTable() {
@@ -189,6 +216,7 @@
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
+                "paging": false,
                 "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
             }).buttons().container().appendTo('#tbl_tipe_wrapper .col-md-6:eq(0)');
         }
