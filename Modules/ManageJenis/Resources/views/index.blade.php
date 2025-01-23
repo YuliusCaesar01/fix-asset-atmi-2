@@ -31,7 +31,8 @@
                             <table id="tbl_jenis" class="table table-striped table-sm">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>No</th>
+                                        <th>Nama Kelompok</th>
                                         <th>Nama Jenis</th>
                                         <th>Kode Jenis</th>
                                         <th class="w-1"><i class="fas fa-bars"></i></th>
@@ -42,7 +43,7 @@
                                         <tr id="index_{{ $jn->id_jenis }}" data-iteration="{{ $loop->iteration }}"
                                              >
                                             <td>{{ $loop->iteration }}</td>
-                                          
+                                            <td>{{ $jn->nama_kelompok_yayasan }}</td>
                                             <td class="nama-jenis">{{ $jn->nama_jenis_yayasan }}</td>
                                             <td class="text-center lead">
                                                 <span class="badge badge-warning">{{ $jn->kode_jenis }}</span>

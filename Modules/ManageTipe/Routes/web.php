@@ -15,6 +15,8 @@ use Modules\ManageTipe\Http\Controllers\ManageTipeController;
 */
 
 Route::prefix('tipe')->middleware('auth')->group(function () {
+    Route::get('/get-kelompok', 'ManageTipeController@getKelompok');
+    Route::get('/get-jenis/{nama_kelompok}', 'ManageTipeController@getJenis');
     Route::resource('managetipe', ManageTipeController::class)->names([
         'index' => 'managetipe.index',
         'create' => 'managetipe.create',
@@ -23,6 +25,8 @@ Route::prefix('tipe')->middleware('auth')->group(function () {
         'edit' => 'managetipe.edit',
         'update' => 'managetipe.update',
         'destroy' => 'managetipe.destroy',
+        
     ]);
     Route::get('managetipe/detail/{id_tipe}', 'ManagetipeController@detail')->name('managetipe.detail');
+    
 });

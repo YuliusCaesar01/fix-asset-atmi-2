@@ -19,22 +19,19 @@ class Tipe extends Model
         'nama_tipe_mikael',
         'nama_tipe_politeknik',
         'kode_tipe',
-        'foto_tipe'
+        'foto_tipe',
+        'nama_kelompok_yayasan',
+        'nama_jenis_yayasan'
     ];
     public static function boot()
-    {
-        parent::boot();
+{
+    parent::boot();
 
-        // Event saat membuat data baru
-        static::creating(function ($tipe) {
-            // Ambil ID terakhir dan hitung kode_tipe berikutnya
-            $lastKode = self::max('kode_tipe');
-            $nextKode = $lastKode ? str_pad((int)$lastKode + 1, 3, '0', STR_PAD_LEFT) : '001';
-
-            // Set kode_tipe dengan kode berikutnya
-            $tipe->kode_tipe = $nextKode;
-        });
-    }
+    static::creating(function ($tipe) {
+        $existingCount = self::where('nama_jenis_yayasan', $tipe->nama_jenis_yayasan)->count();
+        $tipe->kode_tipe = str_pad($existingCount + 1, 3, '0', STR_PAD_LEFT);
+    });
+}
 
     public function kelompok(): HasMany
     {

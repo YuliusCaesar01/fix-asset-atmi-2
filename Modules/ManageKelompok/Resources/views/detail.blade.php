@@ -43,7 +43,7 @@
                                     @if(auth()->user()->role_id == 19)
                                     <div class="col-6">
                                         <a href="javascript:void(0)" id="btn-edit-kelompok" title="Ubah kelompok"
-                                            data-di="{{   $kelompok->id_kelompok}}" class="btn btn-sm btn-secondary float-right">
+                                            data-di="{{$kelompok->id_kelompok}}" class="btn btn-sm btn-secondary float-right">
                                             <i class="fas fa-pencil-alt"></i>
                                         </a>
                                     </div>

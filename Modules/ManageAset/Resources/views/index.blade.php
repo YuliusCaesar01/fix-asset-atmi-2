@@ -325,7 +325,7 @@
                 let kelompokId = $(this).val();
 
                 $.ajax({
-                    url: '{{ route('getJenis') }}',
+                    url: '/aset/getJenis',
                     type: 'GET',
                     data: {
                         'id_kelompok': kelompokId

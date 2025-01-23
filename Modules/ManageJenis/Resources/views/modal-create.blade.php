@@ -38,7 +38,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="nama_jenis" class="control-label">Jenis Barang Yayasan</label>
+                        <label for="nama_jenis" class="control-label">Nama Jenis</label>
                         <input type="text" class="form-control @error('nama_jenis_yayasan') is-invalid @enderror" id="nama_jenis_yayasan" name="nama_jenis_yayasan" required value="{{ old('nama_jenis_yayasan') }}">
                         @error('nama_jenis_yayasan')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>

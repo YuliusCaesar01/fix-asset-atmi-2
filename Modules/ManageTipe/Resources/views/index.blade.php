@@ -39,9 +39,11 @@
                             <table id="tbl_tipe" class="table table-striped table-sm">
                                 <thead>
                                     <tr>
-                                        <th>#</th>
+                                        <th>No</th>
+                                        <th>Nama Kelompok</th>
+                                        <th>Nama Jenis</th>
+                                        <th>Nama Tipe</th>
                                         <th>Kode Tipe</th>
-                                        <th>Nama</th>
                                         <th class="w-1"><i class="fas fa-bars"></i></th>
                                     </tr>
                                 </thead>
@@ -52,10 +54,12 @@
                                             data-nama-tipe-mikael="{{ $tp->nama_tipe_mikael }}"
                                             data-nama-tipe-politeknik="{{ $tp->nama_tipe_politeknik }}">
                                             <td>{{ $loop->iteration }}</td>
+                                            <td class="nama-tipe">{{ $tp->nama_kelompok_yayasan }}</td>
+                                            <td class="nama-tipe">{{ $tp->nama_jenis_yayasan }}</td>
+                                            <td class="nama-tipe">{{ $tp->nama_tipe_yayasan }}</td>
                                             <td class="text-center lead">
                                                 <span class="badge bg-green">{{ $tp->kode_tipe }}</span>
                                             </td>
-                                            <td class="nama-tipe">{{ $tp->nama_tipe_yayasan }}</td>
                                             <td>
                                                 <a href="javascript:void(0)" id="btn-detail-tipe"
                                                     data-di="{{ $tp->id_tipe }}" title="Detail Tipe"
@@ -80,9 +84,11 @@
                                 </tbody>
                                 <tfoot>
                                     <tr>
-                                        <th>#</th>
+                                        <th>No</th>
+                                        <th>Nama Kelompok</th>
+                                        <th>Nama Jenis</th>
+                                        <th>Nama Tipe</th>
                                         <th>Kode Tipe</th>
-                                        <th>Nama</th>
                                         <th><i class="fas fa-bars"></i></th>
                                     </tr>
                                 </tfoot>
@@ -95,7 +101,7 @@
         </div>
     </div>
     
-<!-- Modal -->
+<!-- Update the form in the modal -->
 <div class="modal fade" id="modal-create" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
@@ -116,22 +122,45 @@
             @endif
             <div class="modal-body">
                 <form id="form-tipe" method="POST" action="/tipe/managetipe" enctype="multipart/form-data">
-                    @csrf <!-- Include CSRF token for Laravel -->
+                    @csrf
                     <input type="hidden" id="id_tipe" name="id_tipe">
+                    
+                    <div class="form-group">
+                        <label for="nama_kelompok" class="control-label">Nama Kelompok</label>
+                        <select class="form-control @error('nama_kelompok') is-invalid @enderror" id="nama_kelompok" name="nama_kelompok">
+                            <option value="">Select Kelompok</option>
+                        </select>
+                        @error('nama_kelompok')
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nama_jenis" class="control-label">Nama Jenis</label>
+                        <select class="form-control @error('nama_jenis') is-invalid @enderror" id="nama_jenis" name="nama_jenis">
+                            <option value="">Select Jenis</option>
+                        </select>
+                        @error('nama_jenis')
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     <div class="form-group">
                         <label for="nama_tipe" class="control-label">Nama Tipe Barang</label>
                         <input type="text" class="form-control @error('nama_tipe') is-invalid @enderror" id="nama_tipe" name="nama_tipe" value="{{ old('nama_tipe') }}">
                         @error('nama_tipe')
-                            <div class="alert alert-danger mt-2" role="alert">{{ $message }}</div>
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+
                     <div class="form-group">
                         <label for="image" class="control-label">Upload Gambar</label>
                         <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
                         @error('image')
-                            <div class="alert alert-danger mt-2" role="alert">{{ $message }}</div>
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">SIMPAN</button>
                     </div>
@@ -140,7 +169,6 @@
         </div>
     </div>
 </div>
-
 
 
 
@@ -187,6 +215,54 @@
             }
         });
     });
+
+    // Add this to your existing script section
+$(document).ready(function() {
+    // Load Kelompok dropdown
+    $.ajax({
+        url: '/tipe/get-kelompok',
+        type: 'GET',
+        success: function(data) {
+            let dropdown = $('#nama_kelompok');
+            dropdown.empty();
+            dropdown.append('<option value="">Select Kelompok</option>');
+            $.each(data, function(key, value) {
+                dropdown.append($('<option></option>')
+                    .attr('value', value.nama_kelompok_yayasan)
+                    .text(value.nama_kelompok_yayasan));
+            });
+        }
+    });
+
+    // Handle Kelompok change
+    $('#nama_kelompok').change(function() {
+        let kelompok = $(this).val();
+        let jenisDropdown = $('#nama_jenis');
+        
+        if (kelompok) {
+            // Enable and load Jenis dropdown
+            jenisDropdown.prop('disabled', false);
+            $.ajax({
+                url: '/tipe/get-jenis/' + kelompok,
+                type: 'GET',
+                success: function(data) {
+                    jenisDropdown.empty();
+                    jenisDropdown.append('<option value="">Select Jenis</option>');
+                    $.each(data, function(key, value) {
+                        jenisDropdown.append($('<option></option>')
+                            .attr('value', value.nama_jenis_yayasan)
+                            .text(value.nama_jenis_yayasan));
+                    });
+                }
+            });
+        } else {
+            // Disable and clear Jenis dropdown
+            jenisDropdown.prop('disabled', true);
+            jenisDropdown.empty();
+            jenisDropdown.append('<option value="">Select Jenis</option>');
+        }
+    });
+});
 
     
     // // Handle form submission for creating kelompok
@@ -261,4 +337,3 @@
 </script>
 
 @endsection
-

@@ -66,6 +66,7 @@
                                                         <option value="1">Yayasan</option>
                                                         <option value="2">SMK Mikael</option>
                                                         <option value="3">Politeknik</option>
+                                                        <option value="4">PT ATMI Solo</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -93,26 +94,26 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                        <div class="row">
-                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <div class="col-4">
+                                                            <div class="form-group">
+                                                                <label>Kelompok</label>
+                                                                <select id="kelompok" name="id_kelompok" class="form-control select2" style="width: 100%;" required>
+                                                                    <option value="">- Pilih Kelompok -</option>
+                                                                    @foreach($kelompok as $item)
+                                                                    <option value="{{ $item->id_kelompok }}">{{ $item->nama_kelompok_yayasan }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
                                                 <div class="col-4">
                                                     <div class="form-group">
-                                                        <label>Tipe</label>
-                                                        <select id="tipe" name="id_tipe" class="form-control select2" style="width: 100%;" required>
-                                                            <option value="">- Pilih Tipe -</option>
-                                                            @foreach($tipe as $item)
-                                                                <option value="{{ $item->id_tipe }}">{{ $item->nama_tipe_yayasan }}</option>
-                                                            @endforeach
-                                                        </select>
-                                                    </div>
-                                                </div>
-                                                <div class="col-4">
-                                                    <div class="form-group">
-                                                        <label>Kelompok</label>
-                                                        <select id="kelompok" name="id_kelompok" class="form-control select2" style="width: 100%;" required>
-                                                            <option value="">- Pilih Kelompok -</option>
-                                                            @foreach($kelompok as $item)
-                                                                <option value="{{ $item->id_kelompok }}">{{ $item->nama_kelompok_yayasan }}</option>
+                                                        <label>Jenis</label>
+                                                        <select id="jenis" name="id_jenis" class="form-control select2" style="width: 100%;" data-placeholder="- Pilih Jenis -" required>
+                                                            <option value="">- Pilih Jenis -</option>
+                                                            @foreach($jenis as $item)
+                                                                <option value="{{ $item->id_jenis }}">{{ $item->nama_jenis_yayasan }}</option>
                                                             @endforeach
                                                         </select>
                                                     </div>
@@ -121,16 +122,16 @@
                                             
                                             <div class="col-4">
                                                 <div class="form-group">
-                                                    <label>Jenis</label>
-                                                    <select id="jenis" name="id_jenis" class="form-control select2" style="width: 100%;" data-placeholder="- Pilih Jenis -" required>
-                                                        <option value="">- Pilih Jenis -</option>
-                                                        @foreach($jenis as $item)
-                                                            <option value="{{ $item->id_jenis }}">{{ $item->nama_jenis_yayasan }}</option>
-                                                        @endforeach
-                                                    </select>
+                                                    <label>Tipe</label>
+                                                        <select id="tipe" name="id_tipe" class="form-control select2" style="width: 100%;" required>
+                                                            <option value="">- Pilih Tipe -</option>
+                                                            @foreach($tipe as $item)
+                                                                <option value="{{ $item->id_tipe }}">{{ $item->nama_tipe_yayasan }}</option>
+                                                            @endforeach
+                                                        </select>
                                                 </div>
                                             </div>
-                                            
+                                           
                                         </div>
                                         
                                         <div class="row">
@@ -276,10 +277,88 @@ $(document).ready(function() {
             ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_mikael }}</option>@endforeach';
         } else if (instansiId == 3) { // Jika Politeknik dipilih
             ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_politeknik }}</option>@endforeach';
-        }
+        } else if (instansiId == 4) { // Jika Politeknik dipilih
+            ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_pt_atmi_solo }}</option>@endforeach';
+        } 
 
         // Kosongkan dropdown ruang dan tambahkan opsi baru
         $('#ruang').html(ruangOptions);
+    });
+});
+</script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+$(document).ready(function() {
+    // Helper function to get CSRF token
+    function getCsrfToken() {
+        return $('meta[name="csrf-token"]').attr('content');
+    }
+
+    // When Kelompok selection changes
+    $('#kelompok').on('change', function() {
+        var kelompokId = $(this).val();
+        var jenisSelect = $('#jenis');
+        
+        console.log('Selected Kelompok ID:', kelompokId); // Debug log
+        
+        // Clear dependent dropdowns
+        jenisSelect.empty().append('<option value="">- Pilih Jenis -</option>');
+        $('#tipe').empty().append('<option value="">- Pilih Tipe -</option>');
+        
+        if (kelompokId) {
+            $.ajax({
+                var baseUrl = "{{ url('/') }}";
+                var url = baseUrl + "/aset/manageaset/create/get-jenis-by-kelompok/" + kelompokId;
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': getCsrfToken()
+                },
+                success: function(data) {
+                    console.log('Received data:', data); // Debug log
+                    $.each(data, function(key, value) {
+    jenisSelect.append('<option value="' + value.id_jenis + '">' + value.nama_jenis_yayasan + '</option>');
+});
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax Error:', error);
+                    console.error('Status:', status);
+                    console.error('Response:', xhr.responseText);
+                }
+            });
+        }
+    });
+
+    // When Jenis selection changes
+    $('#jenis').on('change', function() {
+        var jenisId = $(this).val();
+        var tipeSelect = $('#tipe');
+        
+        console.log('Selected Jenis ID:', jenisId); // Debug log
+        
+        // Clear Tipe dropdown
+        tipeSelect.empty().append('<option value="">- Pilih Tipe -</option>');
+        
+        if (jenisId) {
+            $.ajax({
+                url: '/aset/manageaset/create/get-tipe-by-jenis/' + jenisId,  // Updated URL
+                type: 'GET',
+                headers: {
+                    'X-CSRF-TOKEN': getCsrfToken()
+                },
+                success: function(data) {
+                    console.log('Received data:', data); // Debug log
+                    $.each(data, function(key, value) {
+                        tipeSelect.append('<option value="' + value.id_tipe + '">' + 
+                            value.nama_tipe_yayasan + '</option>');
+                    });
+                },
+                error: function(xhr, status, error) {
+                    console.error('Ajax Error:', error);
+                    console.error('Status:', status);
+                    console.error('Response:', xhr.responseText);
+                }
+            });
+        }
     });
 });
 </script>

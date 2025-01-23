@@ -51,6 +51,7 @@ class ManageRuangController extends Controller
             'nama_yayasan' => 'nullable|string|unique:ruangs,nama_ruang_yayasan',
             'nama_mikael' => 'nullable|string|unique:ruangs,nama_ruang_mikael',
             'nama_politeknik' => 'nullable|string|unique:ruangs,nama_ruang_politeknik',
+            'nama_pt_atmi_solo' => 'nullable|string|unique:ruangs,nama_ruang_pt_atmi_solo',
             'image' => 'nullable|image|max:2048', // Validate the image
         ]);
     
@@ -81,7 +82,8 @@ class ManageRuangController extends Controller
             'nama_ruang_yayasan' => $request->nama_yayasan,
             'nama_ruang_mikael' => $request->nama_mikael,
             'nama_ruang_politeknik' => $request->nama_politeknik,
-            'foto_ruang' => $imagePath, // Save the image path
+            'nama_ruang_pt_atmi_solo' => $request->nama_pt_atmi_solo,
+            'foto_ruang' => $imagePath,
         ]);
     
         // Generate the kode_ruang with leading zeros based on the ID
@@ -91,6 +93,8 @@ class ManageRuangController extends Controller
         $ruang->nama_ruang_yayasan = $ruang->nama_ruang_yayasan ?? 'ruangyayasan' . $kodeRuang;
         $ruang->nama_ruang_mikael = $ruang->nama_ruang_mikael ?? 'ruangmikael' . $kodeRuang;
         $ruang->nama_ruang_politeknik = $ruang->nama_ruang_politeknik ?? 'ruangpoliteknik' . $kodeRuang;
+        $ruang->nama_ruang_pt_atmi_solo = $ruang->nama_ruang_pt_atmi_solo ?? 'ruangptatmisolo' . $kodeRuang;
+
     
         // Update the record with the generated kode_ruang and default names
         $ruang->update([

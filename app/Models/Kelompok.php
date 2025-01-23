@@ -29,6 +29,7 @@ class Kelompok extends Model
            $kelompok->kode_kelompok = str_pad($kelompok->id_kelompok ?? Kelompok::max('id_kelompok') + 1, 2, '0', STR_PAD_LEFT);
        });
    }
+   
     public function tipe(): BelongsTo
     {
         return $this->belongsTo(Tipe::class, 'id_tipe');
@@ -36,7 +37,7 @@ class Kelompok extends Model
 
     public function jenis(): HasMany
     {
-        return $this->hasMany(Jenis::class, 'id_jenis');
+        return $this->hasMany(Jenis::class, 'id_kelompok', 'id_kelompok');
     }
 
     public function fixedasset(): HasMany

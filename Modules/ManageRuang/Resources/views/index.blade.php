@@ -34,17 +34,15 @@
                                 <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
                                     <span>Pilih Institusi:</span>
                                     <select class="form-control form-control-sm" id="mode-selector">
-                                        <center>
                                         <option value="yayasan">Yayasan</option>
                                         <option value="smkmikael">SMK Mikael</option>
                                         <option value="politeknik">Politeknik</option>
-                                        </center>
+                                        <option value="ptatmisolo">PT Atmi Solo</option>
                                     </select>
                                 </div>
-                                
                             </div>
                         </div>
-                        
+
                         <div class="card-body">
                             <table id="tbl_ruang" class="table table-striped table-sm">
                                 <thead>
@@ -60,7 +58,8 @@
                                         <tr id="index_{{ $rg->id_ruang }}" data-iteration="{{ $loop->iteration }}" 
                                             data-nama-ruang-yayasan="{{ $rg->nama_ruang_yayasan }}" 
                                             data-nama-ruang-smkmikael="{{ $rg->nama_ruang_mikael }}" 
-                                            data-nama-ruang-politeknik="{{ $rg->nama_ruang_politeknik }}">
+                                            data-nama-ruang-politeknik="{{ $rg->nama_ruang_politeknik }}"
+                                            data-nama-ruang-ptatmisolo="{{ $rg->nama_ruang_pt_atmi_solo }}">
                                             <td>{{ $loop->iteration }}</td>
                                             <td class="nama-ruang">{{ $rg->nama_ruang_yayasan }}</td>
                                             <td class="text-center lead">
@@ -82,7 +81,6 @@
                                                         <i class="fa fa-trash"></i> Delete
                                                     </button>
                                                 </form>
-                                                
                                                 @endrole
                                             </td>
                                         </tr>
@@ -127,6 +125,9 @@
                             break;
                         case 'politeknik':
                             namaRuang = $(this).data('nama-ruang-politeknik');
+                            break;
+                        case 'ptatmisolo':
+                            namaRuang = $(this).data('nama-ruang-ptatmisolo');
                             break;
                     }
                     $(this).find('.nama-ruang').text(namaRuang);

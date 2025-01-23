@@ -2,24 +2,25 @@
 
 namespace Modules\ManageAset\Http\Controllers;
 
-use App\Imports\ImportItem;
-use App\Models\Divisi;
-use App\Models\FixedAsset;
-use App\Models\Institusi;
-use App\Models\Jenis;
-use App\Models\Kelompok;
-use App\Models\Lokasi;
-use App\Models\Ruang;
+use Log;
 use App\Models\Tipe;
+use App\Models\Jenis;
+use App\Models\Ruang;
+use App\Models\Divisi;
+use App\Models\Lokasi;
 use GuzzleHttp\Client;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\Kelompok;
+use App\Models\Institusi;
+use App\Models\FixedAsset;
+use Endroid\QrCode\QrCode;
+use App\Imports\ImportItem;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Storage;
-use Maatwebsite\Excel\Facades\Excel;
-use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
+use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Contracts\Support\Renderable;
 
 
 class ManageAsetController extends Controller
@@ -180,6 +181,35 @@ $base64QrCode = base64_encode($qrCodeImage);
      * Show the form for creating a new resource.
      * @return Renderable
      */
+
+     public function getJenisByKelompok($kelompokId)
+{
+    $kelompok = Kelompok::find($kelompokId);
+
+    if (!$kelompok) {
+        return response()->json([]);
+    }
+
+    $jenis = Jenis::where('id_kelompok', $kelompokId)->get();
+
+    return response()->json($jenis);
+}
+
+public function getTipeByJenis($jenisId)
+{
+    $jenis = Jenis::find($jenisId);
+
+    if (!$jenis) {
+        return response()->json([]);
+    }
+
+    $tipe = Tipe::where('id_jenis', $jenisId)->get();
+
+    return response()->json($tipe);
+}
+
+
+
     public function create()
     {
         $menu = "Tambah Aset";

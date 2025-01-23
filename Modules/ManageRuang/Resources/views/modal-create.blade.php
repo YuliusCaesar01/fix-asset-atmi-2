@@ -50,6 +50,14 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="nama_pt_atmi_solo" class="control-label">Nama Ruang PT ATMI Solo</label>
+                        <input type="text" class="form-control @error('nama_pt_atmi_solo') is-invalid @enderror" name="nama_pt_atmi_solo" id="nama_pt_atmi_solo" value="{{ old('nama_pt_atmi_solo') }}">
+                        @error('nama_pt_atmi_solo')
+                            <div class="alert alert-danger mt-2">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="form-group">
                         <label for="image" class="control-label">Upload Gambar (optional)</label>
                         <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
                         <small>Gambar Minimal 2 Mb</small>

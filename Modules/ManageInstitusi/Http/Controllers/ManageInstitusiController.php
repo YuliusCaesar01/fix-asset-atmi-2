@@ -20,7 +20,7 @@ class ManageInstitusiController extends Controller
     protected  $menu = 'Institusi';
     public function index()
     {
-        $data = Institusi::take(3)->get(); // Mengambil hanya 3 entri
+        $data = Institusi::all(); 
         return view('manageinstitusi::index')->with(['institusi' => $data, 'menu' => $this->menu]);
         
     }

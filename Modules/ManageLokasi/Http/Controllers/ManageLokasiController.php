@@ -50,7 +50,7 @@ class ManageLokasiController extends Controller
     try {
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
-            'nama_lokasi_yayasan' => 'required|string|unique:lokasis,nama_lokasi_yayasan',
+            'nama_lokasi_yayasan' => 'required|string',
             'keterangan_lokasi' => 'required|string',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
         ], [

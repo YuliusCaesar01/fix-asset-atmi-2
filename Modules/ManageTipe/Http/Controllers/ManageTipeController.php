@@ -2,12 +2,14 @@
 
 namespace Modules\ManageTipe\Http\Controllers;
 
-use App\Models\Kelompok;
 use App\Models\Tipe;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\Jenis;
+use App\Models\Kelompok;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Validation\Rule; // Make sure to import this at the top of your controller
 
 class ManageTipeController extends Controller
@@ -45,41 +47,60 @@ class ManageTipeController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
-    {
-        $validator = Validator::make($request->all(), [
-            'nama_tipe' => 'required|unique:tipes,nama_tipe_yayasan',
-            'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image if provided
-        ]);
-    
-        // Check if validation fails
-        if ($validator->fails()) {
-            dd('error');// Redirect back with errors and input
-        }
-    
-        // Generate new kode_tipe
-        $kode_max = Tipe::max('kode_tipe') ?? 0; // Ensure $kode_max is initialized
-        $kode_baru = str_pad($kode_max + 1, 2, '0', STR_PAD_LEFT);
-    
-        // Handle image upload
-        $path = null;
-        if ($request->hasFile('image')) {
-            $image = $request->file('image');
-            $imageName = 'image_' . time() . '.' . $image->getClientOriginalExtension();
-            $imagePath = public_path('foto/fixasetlist'); // Change to your desired path
-            $image->move($imagePath, $imageName);
-            $path = 'foto/fixasetlist/' . $imageName; // Store image path
-        }
-    
-        // Create new Tipe
-        $tipe = Tipe::create([
-            'nama_tipe_yayasan' => $request->nama_tipe,
-            'kode_tipe' => $kode_baru,
-            'foto_tipe' => $path // Ensure this column exists in the database
-        ]);
-    
-        return back()->with('success', 'Tipe data created successfully!');
+    public function getKelompok()
+{
+    $kelompok = DB::table('jenis')
+        ->select('nama_kelompok_yayasan')
+        ->distinct()
+        ->get();
+    return response()->json($kelompok);
+}
+
+public function getJenis($nama_kelompok)
+{
+    $jenis = Jenis::where('nama_kelompok_yayasan', $nama_kelompok)
+        ->select('nama_jenis_yayasan')
+        ->distinct()
+        ->get();
+    return response()->json($jenis);
+}
+
+public function store(Request $request)
+{
+    $validator = Validator::make($request->all(), [
+        'nama_kelompok' => 'required',
+        'nama_jenis' => 'required',
+        'nama_tipe' => 'required',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+    ]);
+
+    if ($validator->fails()) {
+        return back()->withErrors($validator)->withInput();
     }
+
+    // Generate kode_tipe based on count of existing tipes with same nama_jenis_yayasan
+    $existingCount = Tipe::where('nama_jenis_yayasan', $request->nama_jenis)->count();
+    $kode_baru = str_pad($existingCount + 1, 3, '0', STR_PAD_LEFT);
+
+    $path = null;
+    if ($request->hasFile('image')) {
+        $image = $request->file('image');
+        $imageName = 'image_' . time() . '.' . $image->getClientOriginalExtension();
+        $imagePath = public_path('foto/fixasetlist');
+        $image->move($imagePath, $imageName);
+        $path = 'foto/fixasetlist/' . $imageName;
+    }
+
+    $tipe = Tipe::create([
+        'nama_tipe_yayasan' => $request->nama_tipe,
+        'kode_tipe' => $kode_baru,
+        'foto_tipe' => $path,
+        'nama_kelompok_yayasan' => $request->nama_kelompok,
+        'nama_jenis_yayasan' => $request->nama_jenis
+    ]);
+
+    return back()->with('success', 'Tipe data created successfully!');
+}
     
 
     /**

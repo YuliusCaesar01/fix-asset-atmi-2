@@ -15,6 +15,7 @@ use Modules\ManageAset\Http\Controllers\ManageAsetController;
 */
 
 Route::prefix('aset')->middleware('auth')->group(function () {
+    
     Route::resource('manageaset', ManageAsetController::class)->names([
         'index' => 'manageaset.index',
         'create' => 'manageaset.create',
@@ -31,4 +32,6 @@ Route::prefix('aset')->middleware('auth')->group(function () {
     Route::get('/getJenis', [ManageAsetController::class, 'getJenis'])->name('getJenis');
     Route::get('/getRuang', [ManageAsetController::class, 'getRuang'])->name('getRuang');
     Route::post('/upload-data', [ManageAsetController::class, 'upload'])->name('manageaset.uploadmasal');
+    Route::get('manageaset/create/get-jenis-by-kelompok/{kelompokId}', [ManageAsetController::class, 'getJenisByKelompok'])->name('getJenisByKelompok');
+Route::get('manageaset/create/get-tipe-by-jenis/{jenisId}', [ManageAsetController::class, 'getTipeByJenis'])->name('getTipeByJenis');
 });

@@ -2,12 +2,13 @@
 
 namespace Modules\ManageJenis\Http\Controllers;
 
+use Log;
 use App\Models\Jenis;
 use App\Models\Kelompok;
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Support\Renderable;
 
 class ManageJenisController extends Controller
 {
@@ -47,33 +48,55 @@ class ManageJenisController extends Controller
      */
     
      public function store(Request $request)
-     {
-         // Validate the incoming request data
-         $validator = Validator::make($request->all(), [
-             'id_kelompok' => 'required|exists:kelompoks,id_kelompok', // Ensure it exists in the kelompok table
-             'nama_jenis_yayasan' => 'required|string|unique:jenis,nama_jenis_yayasan', // Ensure it is unique in jenis table
-         ]);
-              // Check if validation fails
-    if ($validator->fails()) {
-        return back()->withErrors($validator)->withInput(); // Redirect back with errors and input
+{
+    try {
+        // Validate the incoming request data
+        $validator = Validator::make($request->all(), [
+            'id_kelompok' => 'required|exists:kelompoks,id_kelompok',
+            'nama_jenis_yayasan' => 'required|string|unique:jenis,nama_jenis_yayasan',
+        ]);
+
+        // Check if validation fails
+        if ($validator->fails()) {
+            return back()->withErrors($validator)->withInput();
+        }
+
+        // Get the next id_jenis
+        $idToUse = Jenis::max('id_jenis') + 1;
+
+        // Get kelompok data
+        $kelompok = Kelompok::find($request->id_kelompok);
+
+        // Add debugging
+        \Log::info('Attempting to create Jenis with:', [
+            'id_jenis' => $idToUse,
+            'id_kelompok' => $request->id_kelompok,
+            'nama_kelompok_yayasan' => $kelompok->nama_kelompok_yayasan,
+            'nama_jenis_yayasan' => $request->nama_jenis_yayasan,
+        ]);
+
+        // Create a new record in the jenis table
+        $jenis = new Jenis();
+        $jenis->id_jenis = $idToUse;
+        $jenis->id_kelompok = $request->id_kelompok;
+        $jenis->nama_kelompok_yayasan = $kelompok->nama_kelompok_yayasan;
+        $jenis->nama_jenis_yayasan = $request->nama_jenis_yayasan;
+        
+        if (!$jenis->save()) {
+            \Log::error('Failed to save Jenis');
+            return back()->with('error', 'Failed to save data')->withInput();
+        }
+
+        Log::info('Jenis created successfully with ID: ' . $jenis->id_jenis);
+
+        return redirect()->back()->with('success', 'Data jenis telah ditambahkan!');
+
+    } catch (\Exception $e) {
+        \Log::error('Error creating Jenis: ' . $e->getMessage());
+        \Log::error($e->getTraceAsString());
+        return back()->with('error', 'An error occurred while saving the data: ' . $e->getMessage())->withInput();
     }
-           $idToUse = Jenis::max('id_jenis') + 1;
-   
-         // Create a new record in the jenis table
-          $jenis = Jenis::create([
-             'id_jenis' => $idToUse,
-             'id_kelompok' => $request->id_kelompok,
-             'nama_jenis_yayasan' => $request->nama_jenis_yayasan,
-             'kode_jenis' => '' // Initial empty value for kode_jenis
-         ]);
- 
-         // Generate kode_jenis based on the newly created id
-         $kodeJenis = str_pad($jenis->id_jenis, 3, '0', STR_PAD_LEFT); // Pad with zeros to a length of 2
-         $jenis->update(['kode_jenis' => $kodeJenis]); // Update the record with the generated kode_jenis
- 
-         // Redirect back with a success message
-         return redirect()->back()->with('success', 'Data jenis telah ditambahkan!');
-     }
+}
 
     /**
      * Show the specified resource.

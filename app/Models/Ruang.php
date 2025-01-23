@@ -21,7 +21,7 @@ class Ruang extends Model
         'nama_ruang_yayasan',
         'nama_ruang_mikael',
         'nama_ruang_politeknik',
-
+        'nama_ruang_pt_atmi_solo',
         'kode_ruang',
         'foto_ruang'
     ];
