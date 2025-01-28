@@ -303,7 +303,7 @@ public function getJenisByKelompok1($kelompokId)
                 'tahun_diterima' => 'required|integer',
                 'no_permaintaan' => 'required|string|max:255',
                 'des_barang' => 'required|string',
-                'status_transaksi' => 'required|string|max:255',
+                'status_transaksi' => 'nullable|string|max:255',
                 'status_barang' => 'required|string|max:255',
             ]);
         

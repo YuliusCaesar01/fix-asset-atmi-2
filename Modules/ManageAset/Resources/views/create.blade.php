@@ -182,7 +182,7 @@
                                                 <div class="form-group">
                                                     <label>Status Transaksi Barang</label>
                                                     <select id="status_transaksi" class="form-control" name="status_transaksi" style="width: 100%;" required>
-                                                        <option value="Pengadaan Baru"> </option>
+                                                        <option value="ㅤㅤㅤㅤㅤ "> </option>
                                                         <option value="Pengadaan Baru">Pengadaan Baru</option>
                                                         <option value="Penjualan">Penjualan</option>
                                                         <option value="Pemindahan">Pemindahan</option>
