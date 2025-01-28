@@ -33,12 +33,12 @@
                                 </div>
                                 <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
                                     <span>Pilih Institusi:</span>
-                                    <select class="form-control form-control-sm" id="mode-selector">
-                                        <option value="yayasan">Yayasan</option>
-                                        <option value="smkmikael">SMK Mikael</option>
-                                        <option value="politeknik">Politeknik</option>
-                                        <option value="ptatmisolo">PT Atmi Solo</option>
-                                    </select>
+                                    <input class="form-control form-control-sm" list="kelompok-list" id="kelompok-input" placeholder="Pilih atau ketik Kelompok...">
+                                    <datalist id="kelompok-list">
+                                        @foreach($institusi as $k)
+                                            <option value="{{ $k->nama_institusi }}">
+                                        @endforeach
+                                    </datalist>
                                 </div>
                             </div>
                         </div>
@@ -48,6 +48,7 @@
                                 <thead>
                                     <tr>
                                         <th>#</th>
+                                        <th>Nama Institusi</th>
                                         <th>Nama Ruang</th>
                                         <th>Kode Ruang</th>
                                         <th class="w-1"><i class="fas fa-bars"></i></th>
@@ -61,7 +62,8 @@
                                             data-nama-ruang-politeknik="{{ $rg->nama_ruang_politeknik }}"
                                             data-nama-ruang-ptatmisolo="{{ $rg->nama_ruang_pt_atmi_solo }}">
                                             <td>{{ $loop->iteration }}</td>
-                                            <td class="nama-ruang">{{ $rg->nama_ruang_yayasan }}</td>
+                                            <td class="nama-institusi">{{ $rg->nama_institusi }}</td>
+                                            <td class="nama-ruang">{{ $rg->nama_ruang }}</td>
                                             <td class="text-center lead">
                                                 <span class="badge badge-danger">{{ $rg->kode_ruang }}</span>
                                             </td>
@@ -108,31 +110,15 @@
 
 @section('scripttambahan')
     <script>
-        $(document).ready(function() {
-            // Handle mode change event
-            $('#mode-selector').change(function() {
-                let selectedMode = $(this).val();
-
-                // Loop through each row and update the "Nama Ruang" column based on the selected mode
-                $('#ruang-body tr').each(function() {
-                    let namaRuang;
-                    switch (selectedMode) {
-                        case 'yayasan':
-                            namaRuang = $(this).data('nama-ruang-yayasan');
-                            break;
-                        case 'smkmikael':
-                            namaRuang = $(this).data('nama-ruang-smkmikael');
-                            break;
-                        case 'politeknik':
-                            namaRuang = $(this).data('nama-ruang-politeknik');
-                            break;
-                        case 'ptatmisolo':
-                            namaRuang = $(this).data('nama-ruang-ptatmisolo');
-                            break;
-                    }
-                    $(this).find('.nama-ruang').text(namaRuang);
-                });
-            });
+       $(document).ready(function() {
+    $('#kelompok-input').on('input', function() {
+        let selectedValue = $(this).val().toLowerCase().trim();
+        
+        $('#tbl_ruang tbody tr').each(function() {
+            let namaJenis = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+            $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
+        });
+    });
 
             // Detail button event
             $('body').on('click', '#btn-detail-ruang', function() {

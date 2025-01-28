@@ -15,6 +15,7 @@ class Tipe extends Model
     protected $primaryKey = 'id_tipe'; //int autoincrement
     protected $fillable = [
         'id_tipe',
+        'id_jenis',
         'nama_tipe_yayasan',
         'nama_tipe_mikael',
         'nama_tipe_politeknik',
@@ -36,6 +37,11 @@ class Tipe extends Model
     public function kelompok(): HasMany
     {
         return $this->hasMany(Kelompok::class, 'id_kelompok');
+    }
+
+    public function jenis()
+    {
+        return $this->belongsTo(Jenis::class, 'nama_jenis_yayasan', 'nama_jenis_yayasan');
     }
 
     public function fixedasset(): HasMany

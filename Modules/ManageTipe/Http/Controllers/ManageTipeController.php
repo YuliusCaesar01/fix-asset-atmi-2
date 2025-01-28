@@ -59,7 +59,7 @@ class ManageTipeController extends Controller
 public function getJenis($nama_kelompok)
 {
     $jenis = Jenis::where('nama_kelompok_yayasan', $nama_kelompok)
-        ->select('nama_jenis_yayasan')
+        ->select('id_jenis', 'nama_jenis_yayasan')
         ->distinct()
         ->get();
     return response()->json($jenis);
@@ -96,7 +96,8 @@ public function store(Request $request)
         'kode_tipe' => $kode_baru,
         'foto_tipe' => $path,
         'nama_kelompok_yayasan' => $request->nama_kelompok,
-        'nama_jenis_yayasan' => $request->nama_jenis
+        'id_jenis' => $request->input('nama_jenis'),
+        'nama_jenis_yayasan' => $request->input('nama_jenis_yayasan'),
     ]);
 
     return back()->with('success', 'Tipe data created successfully!');

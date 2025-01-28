@@ -39,97 +39,114 @@
                                 <!-- Location Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_lokasi" class="form-label fw-bold">Lokasi</label>
-                                        <select name="id_lokasi" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Lokasi --</option>
+                                        <label for="lokasi_input" class="form-label fw-bold">Lokasi</label>
+                                        <input list="lokasi_list" 
+                                               id="lokasi_input" 
+                                               name="id_lokasi" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Lokasi --"
+                                               value="{{ $selectedValues['lokasi']->nama_lokasi_yayasan ?? '' }}">
+                                        <datalist id="lokasi_list">
                                             @foreach ($lokasi as $lok)
-                                                <option value="{{ $lok->id_lokasi }}" {{ request('id_lokasi') == $lok->id_lokasi ? 'selected' : '' }}>
-                                                    {{ $lok->nama_lokasi_yayasan }}
-                                                </option>
+                                                <option value="{{ $lok->nama_lokasi_yayasan }}" data-value="{{ $lok->id_lokasi }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
-
+                            
                                 <!-- Institution Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_institusi" class="form-label fw-bold">Institusi</label>
-                                        <select name="id_institusi" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Institusi --</option>
+                                        <label for="institusi_input" class="form-label fw-bold">Institusi</label>
+                                        <input list="institusi_list" 
+                                               id="institusi_input" 
+                                               name="id_institusi" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Institusi --"
+                                               value="{{ $selectedValues['institusi']->nama_institusi ?? '' }}">
+                                        <datalist id="institusi_list">
                                             @foreach ($institusi as $ins)
-                                                <option value="{{ $ins->id_institusi }}" {{ request('id_institusi') == $ins->id_institusi ? 'selected' : '' }}>
-                                                    {{ $ins->nama_institusi }}
-                                                </option>
+                                                <option value="{{ $ins->nama_institusi }}" data-value="{{ $ins->id_institusi }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
-
+                            
                                 <!-- Room Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_ruang" class="form-label fw-bold">Ruang</label>
-                                        <select name="id_ruang" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Ruang --</option>
+                                        <label for="ruang_input" class="form-label fw-bold">Ruang</label>
+                                        <input list="ruang_list" 
+                                               id="ruang_input" 
+                                               name="id_ruang" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Ruang --"
+                                               value="{{ $selectedValues['ruang']->nama_ruang ?? '' }}">
+                                        <datalist id="ruang_list">
                                             @foreach ($ruang as $ru)
-                                                <option value="{{ $ru->id_ruang }}" {{ request('id_ruang') == $ru->id_ruang ? 'selected' : '' }}>
-                                                    {{ $ru->nama_ruang_yayasan }}
-                                                </option>
+                                                <option value="{{ $ru->nama_ruang }}" data-value="{{ $ru->id_ruang }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
                                 
                                 <!-- Group Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_kelompok" class="form-label fw-bold">Kelompok</label>
-                                        <select name="id_kelompok" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Kelompok --</option>
+                                        <label for="kelompok_input" class="form-label fw-bold">Kelompok</label>
+                                        <input list="kelompok_list" 
+                                               id="kelompok_input" 
+                                               name="id_kelompok" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Kelompok --"
+                                               value="{{ $selectedValues['kelompok']->nama_kelompok_yayasan ?? '' }}">
+                                        <datalist id="kelompok_list">
                                             @foreach ($kelompok as $kel)
-                                                <option value="{{ $kel->id_kelompok }}" {{ request('id_kelompok') == $kel->id_kelompok ? 'selected' : '' }}>
-                                                    {{ $kel->nama_kelompok_yayasan }}
-                                                </option>
+                                                <option value="{{ $kel->nama_kelompok_yayasan }}" data-value="{{ $kel->id_kelompok }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
-
+                            
                                 <!-- Category Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_jenis" class="form-label fw-bold">Jenis</label>
-                                        <select name="id_jenis" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Jenis --</option>
+                                        <label for="jenis_input" class="form-label fw-bold">Jenis</label>
+                                        <input list="jenis_list" 
+                                               id="jenis_input" 
+                                               name="id_jenis" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Jenis --"
+                                               value="{{ $selectedValues['jenis']->nama_jenis_yayasan ?? '' }}">
+                                        <datalist id="jenis_list">
                                             @foreach ($jenis as $jen)
-                                                <option value="{{ $jen->id_jenis }}" {{ request('id_jenis') == $jen->id_jenis ? 'selected' : '' }}>
-                                                    {{ $jen->nama_jenis_yayasan }}
-                                                </option>
+                                                <option value="{{ $jen->nama_jenis_yayasan }}" data-value="{{ $jen->id_jenis }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
-
-                                
-                        
+                            
                                 <!-- Type Filter -->
                                 <div class="col-md-4">
                                     <div class="form-group">
-                                        <label for="id_tipe" class="form-label fw-bold">Tipe</label>
-                                        <select name="id_tipe" class="form-select" onchange="this.form.submit()">
-                                            <option value="">-- Pilih Tipe --</option>
+                                        <label for="tipe_input" class="form-label fw-bold">Tipe</label>
+                                        <input list="tipe_list" 
+                                               id="tipe_input" 
+                                               name="id_tipe" 
+                                               class="form-control" 
+                                               placeholder="-- Pilih Tipe --"
+                                               value="{{ $selectedValues['tipe']->nama_tipe_yayasan ?? '' }}">
+                                        <datalist id="tipe_list">
                                             @foreach ($tipe as $tip)
-                                                <option value="{{ $tip->id_tipe }}" {{ request('id_tipe') == $tip->id_tipe ? 'selected' : '' }}>
-                                                    {{ $tip->nama_tipe_yayasan }}
-                                                </option>
+                                                <option value="{{ $tip->nama_tipe_yayasan }}" data-value="{{ $tip->id_tipe }}">
                                             @endforeach
-                                        </select>
+                                        </datalist>
                                     </div>
                                 </div>
                                 
-                                <!-- Reset Button -->
+                                <!-- Filter and Reset Buttons -->
                                 <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary me-2">Filter</button>
                                     <button type="button" class="btn btn-secondary" onclick="resetFilters()">Reset Filters</button>
                                 </div>
                             </form>
@@ -240,18 +257,160 @@
     <script src="{{ asset('plugins/moment/moment.min.js') }}"></script>
     <script src="{{ asset('plugins/inputmask/jquery.inputmask.min.js') }}"></script>
     <script>
-        function resetFilters() {
-            // Get all select elements in the form
-            const selects = document.querySelectorAll('#filterForm select');
-            
-            // Reset each select to its first option
-            selects.forEach(select => {
-                select.selectedIndex = 0;
+        $(document).ready(function() {
+            // Handle kelompok change
+            $('#kelompok_input').on('input', function() {
+                let kelompokName = $(this).val();
+                let kelompokId = $('#kelompok_list option').filter(function() {
+                    return this.value === kelompokName;
+                }).data('value');
+        
+                // Clear jenis input and datalist
+                $('#jenis_input').val('');
+                $('#jenis_list').empty();
+                
+                if (!kelompokId) {
+                    return;
+                }
+                
+                // Fetch jenis for selected kelompok
+                $.ajax({
+                    url: '{{ route("getJenisByKelompok3") }}',
+                    type: 'GET',
+                    data: { id_kelompok: kelompokId },
+                    success: function(response) {
+                        if (response && response.length > 0) {
+                            response.forEach(function(jenis) {
+                                $('#jenis_list').append(
+                                    $('<option></option>')
+                                        .val(jenis.nama_jenis_yayasan)
+                                        .attr('data-value', jenis.id_jenis)
+                                );
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching jenis:', error);
+                    }
+                });
             });
-            
-            // Submit the form to refresh the page with cleared filters
-            document.getElementById('filterForm').submit();
-        }
+
+            $('#jenis_input').on('input', function() {
+                let jenisName = $(this).val();
+                let jenisId = $('#jenis_list option').filter(function() {
+                    return this.value === jenisName;
+                }).data('value');
+        
+                // Clear tipe input and datalist
+                $('#tipe_input').val('');
+                $('#tipe_list').empty();
+                
+                if (!jenisId) {
+                    return;
+                }
+                
+                // Fetch jenis for selected Jenis
+                $.ajax({
+                    url: '{{ route("getTipeByJenis1") }}',
+                    type: 'GET',
+                    data: { id_jenis: jenisId },
+                    success: function(response) {
+                        if (response && response.length > 0) {
+                            response.forEach(function(tipe) {
+                                $('#tipe_list').append(
+                                    $('<option></option>')
+                                        .val(tipe.nama_tipe_yayasan)
+                                        .attr('data-value', tipe.id_tipe)
+                                );
+                            });
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error fetching jenis:', error);
+                    }
+                });
+            });
+        
+            // Keep your existing institution/ruang handling code
+            $('#institusi_input').on('input', function() {
+                let institusiName = $(this).val();
+                let institusiId = $('#institusi_list option').filter(function() {
+                    return this.value === institusiName;
+                }).data('value');
+        
+                // Clear room input and datalist
+                $('#ruang_input').val('');
+                $('#ruang_list').empty();
+                
+                if (!institusiId) {
+                    return;
+                }
+                
+                // Fetch rooms for selected institution
+                $.ajax({
+                    url: '{{ route("getRoomsByInstitution") }}',
+                    type: 'GET',
+                    data: { id_institusi: institusiId },
+                    success: function(response) {
+                        if (response && response.length > 0) {
+                            response.forEach(function(room) {
+                                $('#ruang_list').append(
+                                    $('<option></option>')
+                                        .val(room.nama_ruang)
+                                        .attr('data-value', room.id_ruang)
+                                );
+                            });
+                        }
+                    }
+                });
+            });
+        
+            // Handle form submission
+            $('#filterForm').on('submit', function(e) {
+                e.preventDefault();
+                
+                // Get all inputs with datalists
+                const inputs = {
+                    'lokasi_input': 'id_lokasi',
+                    'institusi_input': 'id_institusi',
+                    'ruang_input': 'id_ruang',
+                    'kelompok_input': 'id_kelompok',
+                    'jenis_input': 'id_jenis',
+                    'tipe_input': 'id_tipe'
+                };
+                
+                // Create a new FormData object
+                const formData = new FormData(this);
+                
+                // Update the form data with the correct IDs
+                Object.entries(inputs).forEach(([inputId, paramName]) => {
+                    const input = document.getElementById(inputId);
+                    const datalist = document.getElementById(input.getAttribute('list'));
+                    const option = Array.from(datalist.options).find(opt => opt.value === input.value);
+                    
+                    if (option) {
+                        formData.set(paramName, option.dataset.value);
+                    } else {
+                        formData.set(paramName, '');
+                    }
+                });
+                
+                // Convert FormData to URL parameters
+                const params = new URLSearchParams(formData);
+                
+                // Redirect to the URL with parameters
+                window.location.href = `${this.action}?${params.toString()}`;
+            });
+        
+            // Reset filters function
+            window.resetFilters = function() {
+                const inputs = document.querySelectorAll('#filterForm input[list]');
+                inputs.forEach(input => {
+                    input.value = '';
+                });
+                document.getElementById('filterForm').submit();
+            }
+        });
         </script>
     <script>
         $(document).ready(function() {

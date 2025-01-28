@@ -17,7 +17,9 @@ class Ruang extends Model
         'id_ruang',
         'id_divisi',
         'id_lokasi',
-        'id_kelompok',
+        'id_institusi',
+        'nama_institusi',
+        'nama_ruang',
         'nama_ruang_yayasan',
         'nama_ruang_mikael',
         'nama_ruang_politeknik',
@@ -44,5 +46,9 @@ class Ruang extends Model
     public function permintaan_fa(): HasMany
     {
         return $this->hasMany(PermintaanFixedAsset::class, 'id_permintaan_fa');
+    }
+    public function institusi()
+    {
+        return $this->belongsTo(Institusi::class, 'id_institusi', 'id_institusi');
     }
 }

@@ -26,46 +26,26 @@
                     @csrf
                     <!-- Form fields -->
                     <div class="form-group">
-                        <label for="nama_yayasan" class="control-label">Nama Ruang Yayasan</label>
-                        <input type="text" class="form-control @error('nama_yayasan') is-invalid @enderror" name="nama_yayasan" id="nama_yayasan" value="{{ old('nama_yayasan') }}">
-                        @error('nama_yayasan')
+                        <label for="institusi" class="control-label">Nama Institusi</label>
+                        <select name="id_institusi" class="form-control @error('id_institusi') is-invalid @enderror" id="institusi" required onchange="setInstitusiName(this)">
+                            <option value="">- Pilih Instansi -</option>
+                            @foreach($institusi as $item)
+                                <option value="{{ $item->id_institusi }}" data-nama="{{ $item->nama_institusi }}">{{ $item->nama_institusi }}</option>
+                            @endforeach
+                        </select>
+                        <input type="hidden" name="nama_institusi" id="nama_institusi_hidden">
+                        @error('id_institusi')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
                     
                     <div class="form-group">
-                        <label for="nama_mikael" class="control-label">Nama Ruang Mikael</label>
-                        <input type="text" class="form-control @error('nama_mikael') is-invalid @enderror" name="nama_mikael" id="nama_mikael" value="{{ old('nama_mikael') }}">
-                        @error('nama_mikael')
+                        <label for="nama_ruang" class="control-label">Nama Ruang</label>
+                        <input type="text" class="form-control @error('nama_ruang') is-invalid @enderror" name="nama_ruang" id="nama_ruang" value="{{ old('nama_ruang') }}">
+                        @error('nama_ruang')
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
-                    
-                    <div class="form-group">
-                        <label for="nama_politeknik" class="control-label">Nama Ruang Politeknik</label>
-                        <input type="text" class="form-control @error('nama_politeknik') is-invalid @enderror" name="nama_politeknik" id="nama_politeknik" value="{{ old('nama_politeknik') }}">
-                        @error('nama_politeknik')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="nama_pt_atmi_solo" class="control-label">Nama Ruang PT ATMI Solo</label>
-                        <input type="text" class="form-control @error('nama_pt_atmi_solo') is-invalid @enderror" name="nama_pt_atmi_solo" id="nama_pt_atmi_solo" value="{{ old('nama_pt_atmi_solo') }}">
-                        @error('nama_pt_atmi_solo')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="form-group">
-                        <label for="image" class="control-label">Upload Gambar (optional)</label>
-                        <input type="file" class="form-control @error('image') is-invalid @enderror" id="image" name="image" accept="image/*">
-                        <small>Gambar Minimal 2 Mb</small>
-                        @error('image')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
                     <div class="modal-footer">
                         <button type="submit" class="btn btn-primary">SIMPAN</button>
                     </div>
@@ -83,7 +63,6 @@ $(document).ready(function() {
     $('#btn-create-ruang').click(function() {
         $('#modal-create').modal('show');
     });
-
   
 });
 document.querySelectorAll('.close-modal, .close').forEach(function (button) {
@@ -91,5 +70,12 @@ document.querySelectorAll('.close-modal, .close').forEach(function (button) {
             $('#editModal').modal('hide');
         });
     });
+</script>
+<script>
+   function setInstitusiName(selectElement) {
+    var selectedOption = selectElement.options[selectElement.selectedIndex];
+    var namaInstitusi = selectedOption.text;
+    document.getElementById('nama_institusi_hidden').value = namaInstitusi;
+}
 </script>
 

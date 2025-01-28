@@ -22,14 +22,12 @@
                     </div><!-- /.row -->
                     <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
                         <span>Pilih Kelompok:</span>
-                        <select class="form-control form-control-sm" id="mode-selector">
-                            <option value="tanah">Tanah</option>
-                            <option value="bangunan">Bangunan</option>
-                            <option value="mesin">Mesin</option>
-                            <option value="kendaraan">Kendaraan</option>
-                            <option value="komputer">Komputer</option>
-                            <option value="inventaris">Inventaris</option>
-                        </select>
+                        <input class="form-control form-control-sm" list="kelompok-list" id="kelompok-input" placeholder="Pilih atau ketik Kelompok...">
+                        <datalist id="kelompok-list">
+                            @foreach($jenis as $k)
+                                <option value="{{ $k->nama_kelompok_yayasan }}">
+                            @endforeach
+                        </datalist>
                     </div>
                 </div><!-- /.container-fluid -->
             </div>
@@ -103,19 +101,12 @@
 @section('scripttambahan')
 <script>
     $(document).ready(function() {
-    // Enhanced table filtering function
-    $('#mode-selector').change(function() {
-        let selectedMode = $(this).val().toLowerCase().trim();
+    $('#kelompok-input').on('input', function() {
+        let selectedValue = $(this).val().toLowerCase().trim();
         
         $('#tbl_jenis tbody tr').each(function() {
-            let namaKelompok = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
-            
-            // If no mode is selected or the mode matches the row's kelompok, show the row
-            if (selectedMode === '' || namaKelompok === selectedMode) {
-                $(this).show();
-            } else {
-                $(this).hide();
-            }
+            let namaJenis = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+            $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
         });
     });
 });

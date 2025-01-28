@@ -63,14 +63,12 @@
                                                     <label>Instansi</label>
                                                     <select id="instansi" name="instansi" class="form-control" style="width: 100%;" required>
                                                         <option value="">- Pilih Instansi -</option>
-                                                        <option value="1">Yayasan</option>
-                                                        <option value="2">SMK Mikael</option>
-                                                        <option value="3">Politeknik</option>
-                                                        <option value="4">PT ATMI Solo</option>
+                                                        @foreach($institusi as $item)
+                                                            <option value="{{ $item->id_institusi }}">{{ $item->nama_institusi }}</option>
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                             </div>
-                                            
                                         </div>
                                         <div class="row">
                                             <div class="col-6">
@@ -91,6 +89,11 @@
                                                     <label>Ruang</label>
                                                     <select id="ruang" name="id_ruang" class="form-control select2" style="width: 100%;" required>
                                                         <option value="">- Pilih Ruang -</option>
+                                                        @foreach($ruang as $item)
+                                                            <option value="{{ $item->id_ruang }}" data-institusi-id="{{ $item->id_institusi }}">
+                                                                {{ $item->nama_ruang }}
+                                                            </option>
+                                                        @endforeach
                                                     </select>
                                                 </div>
                                             </div>
@@ -110,12 +113,14 @@
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label>Jenis</label>
-                                                        <select id="jenis" name="id_jenis" class="form-control select2" style="width: 100%;" data-placeholder="- Pilih Jenis -" required>
-                                                            <option value="">- Pilih Jenis -</option>
-                                                            @foreach($jenis as $item)
-                                                                <option value="{{ $item->id_jenis }}">{{ $item->nama_jenis_yayasan }}</option>
-                                                            @endforeach
-                                                        </select>
+                                                    <select id="jenis" name="id_jenis" class="form-control select2" style="width: 100%;" required>
+                                                        <option value="">- Pilih Jenis -</option>
+                                                        @foreach($jenis as $item)
+                                                            <option value="{{ $item->id_jenis }}" data-kelompok-id="{{ $item->id_kelompok }}">
+                                                                {{ $item->nama_jenis_yayasan }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
                                                     </div>
                                                 </div>
                                             </div>
@@ -126,7 +131,9 @@
                                                         <select id="tipe" name="id_tipe" class="form-control select2" style="width: 100%;" required>
                                                             <option value="">- Pilih Tipe -</option>
                                                             @foreach($tipe as $item)
-                                                                <option value="{{ $item->id_tipe }}">{{ $item->nama_tipe_yayasan }}</option>
+                                                                <option value="{{ $item->id_tipe }}"data-jenis-id="{{ $item->id_jenis }}">
+                                                                    {{ $item->nama_tipe_yayasan }}
+                                                                </option>
                                                             @endforeach
                                                         </select>
                                                 </div>
@@ -175,6 +182,7 @@
                                                 <div class="form-group">
                                                     <label>Status Transaksi Barang</label>
                                                     <select id="status_transaksi" class="form-control" name="status_transaksi" style="width: 100%;" required>
+                                                        <option value="Pengadaan Baru"> </option>
                                                         <option value="Pengadaan Baru">Pengadaan Baru</option>
                                                         <option value="Penjualan">Penjualan</option>
                                                         <option value="Pemindahan">Pemindahan</option>
@@ -222,7 +230,7 @@
                                             <label for="InputFile">File Foto Barang</label>
                                             <div class="custom-file">
                                                 <input type="file" class="custom-file-input" id="customFile"
-                                                    name="foto_barang" required>
+                                                    name="foto_barang">
                                                 <label class="custom-file-label" for="customFile">Choose file</label>
                                             </div>
                                         </div>
@@ -265,28 +273,85 @@
     </div>
 @endsection
 @section('scripttambahan')
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script>
 $(document).ready(function() {
+    // Store all ruang options in a variable when page loads
+    var allRuangOptions = $('#ruang option').clone();
+    
     $('#instansi').change(function() {
-        var instansiId = $(this).val(); // Ambil nilai instansi yang dipilih
-        var ruangOptions = ''; // Variabel untuk menyimpan opsi ruang
-
-        if (instansiId == 1) { // Jika Yayasan dipilih
-            ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_yayasan }}</option>@endforeach';
-        } else if (instansiId == 2) { // Jika SMK Mikael dipilih
-            ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_mikael }}</option>@endforeach';
-        } else if (instansiId == 3) { // Jika Politeknik dipilih
-            ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_politeknik }}</option>@endforeach';
-        } else if (instansiId == 4) { // Jika Politeknik dipilih
-            ruangOptions += '@foreach($ruang as $rg)<option value="{{ $rg->id_ruang }}">{{ $rg->nama_ruang_pt_atmi_solo }}</option>@endforeach';
-        } 
-
-        // Kosongkan dropdown ruang dan tambahkan opsi baru
-        $('#ruang').html(ruangOptions);
+        var selectedInstitusiId = $(this).val();
+        
+        // Clear and disable ruang dropdown
+        $('#ruang')
+            .empty()
+            .append('<option value="">- Pilih Ruang -</option>')
+            .prop('disabled', !selectedInstitusiId);
+            
+        if (selectedInstitusiId) {
+            // Filter ruang options based on selected institusi
+            allRuangOptions.each(function() {
+                var ruangOption = $(this);
+                if (ruangOption.data('institusi-id') == selectedInstitusiId) {
+                    $('#ruang').append(ruangOption.clone());
+                }
+            });
+        }
     });
 });
 </script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Store all ruang options in a variable when page loads
+        var allJenisOptions = $('#jenis option').clone();
+        
+        $('#kelompok').change(function() {
+            var selectedKelompokId = $(this).val();
+            
+            // Clear and disable ruang dropdown
+            $('#jenis')
+                .empty()
+                .append('<option value="">- Pilih Jenis -</option>')
+                .prop('disabled', !selectedKelompokId);
+                
+            if (selectedKelompokId) {
+                // Filter ruang options based on selected institusi
+                allJenisOptions.each(function() {
+                    var jenisOption = $(this);
+                    if (jenisOption.data('kelompok-id') == selectedKelompokId) {
+                        $('#jenis').append(jenisOption.clone());
+                    }
+                });
+            }
+        });
+    });
+    </script>
+    <script>
+        $(document).ready(function() {
+            // Store all ruang options in a variable when page loads
+            var allTipeOptions = $('#tipe option').clone();
+            
+            $('#jenis').change(function() {
+                var selectedJenisId = $(this).val();
+                
+                // Clear and disable ruang dropdown
+                $('#tipe')
+                    .empty()
+                    .append('<option value="">- Pilih Tipe -</option>')
+                    .prop('disabled', !selectedJenisId);
+                    
+                if (selectedJenisId) {
+                    // Filter ruang options based on selected institusi
+                    allTipeOptions.each(function() {
+                        var TipeOption = $(this);
+                        if (TipeOption.data('jenis-id') == selectedJenisId) {
+                            $('#tipe').append(TipeOption.clone());
+                        }
+                    });
+                }
+            });
+        });
+        </script>
 <script>
 $(document).ready(function() {
     // Helper function to get CSRF token

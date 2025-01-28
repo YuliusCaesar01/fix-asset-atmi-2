@@ -33,15 +33,13 @@
                                     <h5 class="m-0">Tipe</h5>
                                 </div>
                                 <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
-                                    <span>Pilih Kelompok:</span>
-                                    <select class="form-control form-control-sm" id="mode-selector">
-                                        <option value="tanah">Tanah</option>
-                                        <option value="bangunan">Bangunan</option>
-                                        <option value="mesin">Mesin</option>
-                                        <option value="kendaraan">Kendaraan</option>
-                                        <option value="komputer">Komputer</option>
-                                        <option value="inventaris">Inventaris</option>
-                                    </select>
+                                    <span>Pilih Jenis:</span>
+                                    <input class="form-control form-control-sm" list="jenis-list" id="jenis-input" placeholder="Pilih atau ketik jenis...">
+                                    <datalist id="jenis-list">
+                                        @foreach($tipe as $k)
+                                            <option value="{{ $k->nama_jenis_yayasan }}">
+                                        @endforeach
+                                    </datalist>
                                 </div>
                             </div>
                         </div>
@@ -154,6 +152,15 @@
                             <div class="alert alert-danger mt-2">{{ $message }}</div>
                         @enderror
                     </div>
+                    
+                    <!-- Hidden input untuk nama_jenis_yayasan -->
+                    <input type="hidden" id="nama_jenis_yayasan" name="nama_jenis_yayasan">
+                    
+                    <div class="form-group">
+                        <label for="id_jenis" class="control-label">ID Jenis Terpilih</label>
+                        <div id="id_jenis" class="border p-2">Pilih jenis untuk melihat ID</div>
+                    </div>
+
 
                     <div class="form-group">
                         <label for="nama_tipe" class="control-label">Nama Tipe Barang</label>
@@ -187,17 +194,12 @@
 @section('scripttambahan')
 <script>
    $(document).ready(function() {
-        // Filter function for manage tipe
-        $('#mode-selector').change(function() {
-            let selectedMode = $(this).val().toLowerCase().trim();
+    $('#jenis-input').on('input', function() {
+        let selectedValue = $(this).val().toLowerCase().trim();
         
-            $('#tbl_tipe tbody tr').each(function() {
-                let namaKelompok = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
-                if (selectedMode === '' || namaKelompok === selectedMode) {
-                    $(this).show();
-                } else {
-                    $(this).hide();
-                }
+        $('#tbl_tipe tbody tr').each(function() {
+            let namaJenis = $(this).find('td:nth-child(3)').text().toLowerCase().trim();
+            $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
         });
     });
 });
@@ -278,7 +280,7 @@ $(document).ready(function() {
                     jenisDropdown.append('<option value="">Select Jenis</option>');
                     $.each(data, function(key, value) {
                         jenisDropdown.append($('<option></option>')
-                            .attr('value', value.nama_jenis_yayasan)
+                            .attr('value', value.id_jenis)
                             .text(value.nama_jenis_yayasan));
                     });
                 }
@@ -289,6 +291,17 @@ $(document).ready(function() {
             jenisDropdown.empty();
             jenisDropdown.append('<option value="">Select Jenis</option>');
         }
+    });
+    $('#nama_jenis').change(function() {
+        let selectedOption = $(this).find(':selected');
+        let selectedId = selectedOption.val();
+        let selectedName = selectedOption.text();
+
+        // Tampilkan ID di div
+        $('#id_jenis').text('ID Jenis: ' + selectedId);
+
+        // Isi hidden input dengan nama_jenis_yayasan
+        $('#nama_jenis_yayasan').val(selectedName);
     });
 });
 

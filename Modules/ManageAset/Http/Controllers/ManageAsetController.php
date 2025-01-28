@@ -40,26 +40,21 @@ class ManageAsetController extends Controller
     $jenis = Jenis::all();
     $ruang = Ruang::all();
 
+    // Get selected values for displaying in inputs
+    $selectedValues = [
+        'lokasi' => $lokasi->where('id_lokasi', $request->id_lokasi)->first(),
+        'institusi' => $institusi->where('id_institusi', $request->id_institusi)->first(),
+        'ruang' => $ruang->where('id_ruang', $request->id_ruang)->first(),
+        'kelompok' => $kelompok->where('id_kelompok', $request->id_kelompok)->first(),
+        'jenis' => $jenis->where('id_jenis', $request->id_jenis)->first(),
+        'tipe' => $tipe->where('id_tipe', $request->id_tipe)->first(),
+    ];
+
     $query = FixedAsset::query();
 
     // Apply filters if present
-    if ($request->filled('nama_barang')) {
-        $query->where('nama_barang', 'LIKE', '%' . $request->nama_barang . '%');
-    }
     if ($request->filled('id_institusi')) {
         $query->where('id_institusi', $request->id_institusi);
-    }
-    if ($request->filled('id_divisi')) {
-        $query->where('id_divisi', $request->id_divisi);
-    }
-    if ($request->filled('id_tipe')) {
-        $query->where('id_tipe', $request->id_tipe);
-    }
-    if ($request->filled('id_jenis')) {
-        $query->where('id_jenis', $request->id_jenis);
-    }
-    if ($request->filled('id_kelompok')) {
-        $query->where('id_kelompok', $request->id_kelompok);
     }
     if ($request->filled('id_lokasi')) {
         $query->where('id_lokasi', $request->id_lokasi);
@@ -67,18 +62,47 @@ class ManageAsetController extends Controller
     if ($request->filled('id_ruang')) {
         $query->where('id_ruang', $request->id_ruang);
     }
-    if ($request->filled('tahun_diterima')) {
-        $query->where('tahun_diterima', $request->tahun_diterima);
+    if ($request->filled('id_kelompok')) {
+        $query->where('id_kelompok', $request->id_kelompok);
+    }
+    if ($request->filled('id_jenis')) {
+        $query->where('id_jenis', $request->id_jenis);
+    }
+    if ($request->filled('id_tipe')) {
+        $query->where('id_tipe', $request->id_tipe);
     }
 
     // Fetch data
     $aset = $query->orderBy('kode_fa')->get();
 
-    return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang'), [
+    return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang', 'selectedValues'), [
         'menu' => $this->menu
-    ])->with('success', 'Data berhasil ditambahkan!');
+    ]);
 }
 
+public function getJenisByKelompok3(Request $request)
+{
+    $jenis = Jenis::where('id_kelompok', $request->id_kelompok)
+                  ->get(['id_jenis', 'nama_jenis_yayasan']);
+    
+    return response()->json($jenis);
+}
+
+public function getTipeByJenis1(Request $request)
+{
+    $tipe = Tipe::where('id_jenis', $request->id_jenis)
+                  ->get(['id_tipe', 'nama_tipe_yayasan']);
+    
+    return response()->json($tipe);
+}
+
+public function getRoomsByInstitution(Request $request)
+{
+    $rooms = Ruang::where('id_institusi', $request->id_institusi)
+                  ->get(['id_ruang', 'nama_ruang']);
+    
+    return response()->json($rooms);
+}
 
     public function detail($kode_fa)
     {
@@ -208,17 +232,25 @@ public function getTipeByJenis($jenisId)
     return response()->json($tipe);
 }
 
-
+public function getJenisByKelompok1($kelompokId)
+{
+    $jenis = DB::table('jenis')
+        ->where('id_kelompok', $kelompokId)
+        ->select('id_jenis', 'nama_jenis_yayasan')
+        ->get();
+    
+    return response()->json($jenis);
+}
 
     public function create()
     {
         $menu = "Tambah Aset";
         $institusi = Institusi::all();
         $divisi = Divisi::all();
-        $tipe = Tipe::all();
+        $tipe = Tipe::with('jenis')->get();
         $lokasi = Lokasi::all();
-        $ruang = Ruang::all();
-        $jenis = Jenis::all();
+        $ruang = Ruang::with('institusi')->get();
+        $jenis = Jenis::with('kelompok')->get();
         $kelompok = Kelompok::all();
 
         return view('manageaset::create', compact('tipe', 'divisi', 'lokasi', 'institusi','ruang' , 'institusi' , 'menu','jenis', 'kelompok'));
@@ -273,7 +305,6 @@ public function getTipeByJenis($jenisId)
                 'des_barang' => 'required|string',
                 'status_transaksi' => 'required|string|max:255',
                 'status_barang' => 'required|string|max:255',
-                'foto_barang' => 'nullable|file|image|max:2048',
             ]);
         
             // Proses upload foto barang
@@ -303,11 +334,23 @@ public function getTipeByJenis($jenisId)
                 ->where('id_lokasi', $request->id_lokasi)
                 ->where('id_ruang', $request->id_ruang)
                 ->count();
-        
-            $no_urut = str_pad($kode_max + 1, 3, '0', STR_PAD_LEFT);
+                
+
+                // Nomor awal urutan
+                $nomor_awal = '001'; // Nomor awal selalu dimulai dari 001
+
+                // Periksa jumlah unit
+                if ($request->jumlah_unit > 1) {
+                    // Nomor akhir sesuai jumlah unit
+                    $nomor_akhir = str_pad($request->jumlah_unit, 3, '0', STR_PAD_LEFT);
+                    $no_urut = $nomor_awal . '-' . $nomor_akhir;
+                } else {
+                    // Jika jumlah unit = 1, gunakan hanya nomor awal
+                    $no_urut = $nomor_awal;
+                }
         
             // Membentuk kode aset
-            $kode_fa = $kode_lokasi . "." . $kode_institusi . "." . $kode_kelompok . "." . $kode_jenis . "." . $kode_ruang . "." . $kode_tipe . "-" . $no_urut;
+            $kode_fa = $kode_lokasi . "." . $kode_institusi . "." . $kode_ruang . "." . $kode_kelompok . "." . $kode_jenis . "." . $kode_tipe . "-" . $no_urut;
         
             // Membuat ID unik untuk aset
             $idFa = Str::random(32);

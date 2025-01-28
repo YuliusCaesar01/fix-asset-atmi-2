@@ -42,7 +42,7 @@ public static function boot()
         $jenis->kode_jenis = str_pad($nextNumber, 3, '0', STR_PAD_LEFT);
     });
 }
-    public function kelompok(): BelongsTo
+    public function kelompok()
     {
         return $this->belongsTo(Kelompok::class, 'id_kelompok', 'id_kelompok');
     }
@@ -56,4 +56,5 @@ public static function boot()
     {
         return $this->hasOne(PermintaanFixedAsset::class, 'id_permintaan_fa');
     }
+
 }

@@ -69,15 +69,15 @@
                                 
                                 <dt class="col-sm-4">Institusi</dt>
                                 <dd class="col-sm-8">{{ $fa->institusi->kode_institusi . ' - ' . $fa->institusi->nama_institusi }}</dd>
+
+                                <dt class="col-sm-4">Ruang</dt>
+                                <dd class="col-sm-8">{{ $fa->ruang->kode_ruang . ' - ' . $fa->ruang->nama_ruang }}</dd>
                                 
                                 <dt class="col-sm-4">Kelompok</dt>
                                 <dd class="col-sm-8">{{ $fa->kelompok->kode_kelompok . ' - ' . $fa->kelompok->nama_kelompok_yayasan }}</dd>
                                 
                                 <dt class="col-sm-4">Jenis</dt>
                                 <dd class="col-sm-8">{{ $fa->jenis->kode_jenis . ' - ' . $fa->jenis->nama_jenis_yayasan }}</dd>
-                                
-                                <dt class="col-sm-4">Ruang</dt>
-                                <dd class="col-sm-8">{{ $fa->ruang->kode_ruang . ' - ' . $fa->ruang->nama_ruang_yayasan }}</dd>
                                 
                                 <dt class="col-sm-4">Tipe</dt>
                                 <dd class="col-sm-8">{{ $fa->tipe->kode_tipe . ' - ' . $fa->tipe->nama_tipe_yayasan }}</dd>

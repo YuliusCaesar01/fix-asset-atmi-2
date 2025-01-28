@@ -2,13 +2,14 @@
 
 namespace Modules\ManageRuang\Http\Controllers;
 
+use App\Models\Ruang;
 use App\Models\Divisi;
 use App\Models\Lokasi;
-use App\Models\Ruang;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\Institusi;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Contracts\Support\Renderable;
 
 class ManageRuangController extends Controller
 {
@@ -20,7 +21,12 @@ class ManageRuangController extends Controller
     public function index()
     {
         $data = $ruang = Ruang::all();
-      return view('manageruang::index')->with(['ruang' => $data,'menu' => $this->menu ]);
+        $institusi = Institusi::all();
+        return view('manageruang::index')->with([
+            'ruang' => $ruang,
+            'institusi' => $institusi, // Include 'institusi' if needed
+            'menu' => $this->menu,
+        ]);
     }
 
     public function detail(string $id_ruang)
@@ -48,6 +54,8 @@ class ManageRuangController extends Controller
     {
         // Validate the incoming request data
         $validator = Validator::make($request->all(), [
+            'nama_institusi' => 'nullable|string|',
+            'nama_ruang' => 'nullable|string|',
             'nama_yayasan' => 'nullable|string|unique:ruangs,nama_ruang_yayasan',
             'nama_mikael' => 'nullable|string|unique:ruangs,nama_ruang_mikael',
             'nama_politeknik' => 'nullable|string|unique:ruangs,nama_ruang_politeknik',
@@ -75,25 +83,22 @@ class ManageRuangController extends Controller
             // Move the uploaded file to the specified path
             $image->move(public_path('foto/fixasetlist'), $imageName);
         }
-    
+        // Determine the count of existing rooms with the same 'nama_institusi'
+    $roomCount = Ruang::where('nama_institusi', $request->nama_institusi)->count();
+    $kodeRuang = str_pad($roomCount + 1, 3, '0', STR_PAD_LEFT); // Increment count and format with leading zeros
         // Create the record
         $ruang = Ruang::create([
             'id_ruang' => $idToUse,
+            'id_institusi' => $request->id_institusi,
+            'nama_institusi' => $request->nama_institusi,
+            'nama_ruang' => $request->nama_ruang,
             'nama_ruang_yayasan' => $request->nama_yayasan,
             'nama_ruang_mikael' => $request->nama_mikael,
             'nama_ruang_politeknik' => $request->nama_politeknik,
             'nama_ruang_pt_atmi_solo' => $request->nama_pt_atmi_solo,
             'foto_ruang' => $imagePath,
+            'kode_ruang' => $kodeRuang,
         ]);
-    
-        // Generate the kode_ruang with leading zeros based on the ID
-        $kodeRuang = str_pad($ruang->id_ruang, 3, '0', STR_PAD_LEFT);
-    
-        // Check and assign default values if fields are null
-        $ruang->nama_ruang_yayasan = $ruang->nama_ruang_yayasan ?? 'ruangyayasan' . $kodeRuang;
-        $ruang->nama_ruang_mikael = $ruang->nama_ruang_mikael ?? 'ruangmikael' . $kodeRuang;
-        $ruang->nama_ruang_politeknik = $ruang->nama_ruang_politeknik ?? 'ruangpoliteknik' . $kodeRuang;
-        $ruang->nama_ruang_pt_atmi_solo = $ruang->nama_ruang_pt_atmi_solo ?? 'ruangptatmisolo' . $kodeRuang;
 
     
         // Update the record with the generated kode_ruang and default names

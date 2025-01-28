@@ -199,15 +199,10 @@ $unreadCount = Notification::where('id_user_penerima', auth()->user()->id)
                 </li>
 
                 <li class="nav-header">KATEGORI</li>
-                <li class="nav-item">
-                    <a href="{{ route('manageinstitusi.index') }}" class="nav-link {{ $menu == 'Institusi' ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-building"></i>
-                        <p>Institusi</p>
-                    </a>
-                </li>
+                
 
                 <li class="nav-item menu-is-opening {{ $menu == 'Tipe' ? 'menu-open' : '' }}">
-                    <a id="daftar" href="#" class="nav-link {{ in_array($menu, ['Tipe', 'Kelompok', 'Jenis', 'Lokasi', 'Ruang']) ? 'active' : '' }}">
+                    <a id="daftar" href="#" class="nav-link {{ in_array($menu, ['Tipe', 'Institusi','Kelompok', 'Jenis', 'Lokasi', 'Ruang']) ? 'active' : '' }}">
                         <i class="nav-icon fas fa-copy"></i>
                         <p>
                             Daftar Kode Aset Tetap
@@ -216,9 +211,22 @@ $unreadCount = Notification::where('id_user_penerima', auth()->user()->id)
                     </a>
                     <ul class="nav nav-treeview">
                         <li class="nav-item">
-                            <a href="{{ route('manage-tipe.index') }}" class="nav-link {{ $menu == 'Tipe' ? 'active' : '' }}">
-                                <i class="fas fa-th-large nav-icon"></i>
-                                <p>Tipe</p>
+                            <a href="{{ route('manage-lokasi.index') }}" class="nav-link {{ $menu == 'Lokasi' ? 'active' : '' }}">
+                                <i class="fas fa-map-marker-alt nav-icon"></i>
+                                <p>Lokasi</p>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="{{ route('manageinstitusi.index') }}" class="nav-link {{ $menu == 'Institusi' ? 'active' : '' }}">
+                                <i class="nav-icon fas fa-building"></i>
+                                <p>Institusi</p>
+                            </a>
+                        </li>
+                        
+                        <li class="nav-item">
+                            <a href="{{ route('manage-ruang.index') }}" class="nav-link {{ $menu == 'Ruang' ? 'active' : '' }}">
+                                <i class="fas fa-building nav-icon"></i>
+                                <p>Ruang</p>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -234,17 +242,13 @@ $unreadCount = Notification::where('id_user_penerima', auth()->user()->id)
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a href="{{ route('manage-lokasi.index') }}" class="nav-link {{ $menu == 'Lokasi' ? 'active' : '' }}">
-                                <i class="fas fa-map-marker-alt nav-icon"></i>
-                                <p>Lokasi</p>
+                            <a href="{{ route('manage-tipe.index') }}" class="nav-link {{ $menu == 'Tipe' ? 'active' : '' }}">
+                                <i class="fas fa-th-large nav-icon"></i>
+                                <p>Tipe</p>
                             </a>
                         </li>
-                        <li class="nav-item">
-                            <a href="{{ route('manage-ruang.index') }}" class="nav-link {{ $menu == 'Ruang' ? 'active' : '' }}">
-                                <i class="fas fa-building nav-icon"></i>
-                                <p>Ruang</p>
-                            </a>
-                        </li>
+                        
+                        
                     </ul>
                 </li>
                 @if(auth()->user()->role_id == 19 || auth()->user()->role_id == 1)
