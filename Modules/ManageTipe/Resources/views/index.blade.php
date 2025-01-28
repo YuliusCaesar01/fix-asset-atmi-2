@@ -32,14 +32,22 @@
                                 <div class="col-6">
                                     <h5 class="m-0">Tipe</h5>
                                 </div>
-                                <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
+                                <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center; row-gap: 1rem;">
+                                    <span>Pilih Kelompok:</span>
+                                    <select class="form-control form-control-sm" id="mode-selector">
+                                        <option value="tanah">Pilih kelompok...</option>
+                                        <option value="tanah">Tanah</option>
+                                        <option value="bangunan">Bangunan</option>
+                                        <option value="mesin">Mesin</option>
+                                        <option value="kendaraan">Kendaraan</option>
+                                        <option value="komputer">Komputer</option>
+                                        <option value="inventaris">Inventaris</option>
+                                    </select>
+                                
                                     <span>Pilih Jenis:</span>
-                                    <input class="form-control form-control-sm" list="jenis-list" id="jenis-input" placeholder="Pilih atau ketik jenis...">
-                                    <datalist id="jenis-list">
-                                        @foreach($tipe as $k)
-                                            <option value="{{ $k->nama_jenis_yayasan }}">
-                                        @endforeach
-                                    </datalist>
+                                    <select class="form-control form-control-sm" id="jenis-selector">
+                                        <option value="">Pilih jenis...</option>
+                                    </select>
                                 </div>
                             </div>
                         </div>
@@ -192,18 +200,63 @@
 @endsection
 
 @section('scripttambahan')
+
 <script>
-   $(document).ready(function() {
-    $('#jenis-input').on('input', function() {
-        let selectedValue = $(this).val().toLowerCase().trim();
+    $(document).ready(function() {
+        // Store all jenis options with their corresponding kelompok
+        const jenisData = @json($tipe);
         
-        $('#tbl_tipe tbody tr').each(function() {
-            let namaJenis = $(this).find('td:nth-child(3)').text().toLowerCase().trim();
-            $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
+        // Function to update jenis options based on selected kelompok
+        function updateJenisOptions(selectedKelompok) {
+            const jenisSelector = $('#jenis-selector');
+            jenisSelector.empty();
+            jenisSelector.append('<option value="">Pilih jenis...</option>');
+            
+            // Get unique nama_jenis_yayasan values for the selected kelompok
+            const uniqueJenis = [...new Set(
+                jenisData
+                    .filter(item => item.nama_kelompok_yayasan.toLowerCase() === selectedKelompok.toLowerCase())
+                    .map(item => item.nama_jenis_yayasan)
+            )];
+            
+            // Add unique options
+            uniqueJenis.forEach(jenis => {
+                jenisSelector.append(`<option value="${jenis}">${jenis}</option>`);
+            });
+        }
+        
+        // Initial load of jenis options based on default kelompok
+        updateJenisOptions($('#mode-selector').val());
+        
+        // Update jenis options when kelompok changes
+        $('#mode-selector').change(function() {
+            const selectedKelompok = $(this).val();
+            updateJenisOptions(selectedKelompok);
+            
+            // Table filtering for kelompok
+            $('#tbl_tipe tbody tr').each(function() {
+                let namaKelompok = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+                $(this).toggle(namaKelompok === selectedKelompok.toLowerCase());
+            });
+        });
+        
+        // Table filtering for jenis
+        $('#jenis-selector').change(function() {
+            const selectedJenis = $(this).val().toLowerCase().trim();
+            
+            $('#tbl_tipe tbody tr').each(function() {
+                let namaKelompok = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+                let namaJenis = $(this).find('td:nth-child(3)').text().toLowerCase().trim();
+                
+                // Show row if kelompok matches and either no jenis is selected or jenis matches
+                $(this).toggle(
+                    namaKelompok === $('#mode-selector').val().toLowerCase() &&
+                    (selectedJenis === '' || namaJenis === selectedJenis)
+                );
+            });
         });
     });
-});
-</script>
+    </script>
 <script>
     $(document).ready(function() {
         // Function to initialize DataTable

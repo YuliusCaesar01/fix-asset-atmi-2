@@ -33,13 +33,13 @@
                                 </div>
                                 <div class="col-6" style="display: grid; grid-template-columns: auto 1fr; align-items: center;">
                                     <span>Pilih Institusi:</span>
-                                    <input class="form-control form-control-sm" list="kelompok-list" id="kelompok-input" placeholder="Pilih atau ketik Kelompok...">
-                                    <datalist id="kelompok-list">
-                                        @foreach($institusi as $k)
-                                            <option value="{{ $k->nama_institusi }}">
-                                        @endforeach
-                                    </datalist>
-                                </div>
+                                    <select class="form-control form-control-sm" id="kelompok-input">
+                                      <option value="">Pilih Institusi...</option>
+                                      @foreach($institusi as $k)
+                                        <option value="{{ $k->nama_institusi }}">{{ $k->nama_institusi }}</option>
+                                      @endforeach
+                                    </select>
+                                  </div>                              
                             </div>
                         </div>
 
@@ -111,14 +111,13 @@
 @section('scripttambahan')
     <script>
        $(document).ready(function() {
-    $('#kelompok-input').on('input', function() {
-        let selectedValue = $(this).val().toLowerCase().trim();
-        
-        $('#tbl_ruang tbody tr').each(function() {
-            let namaJenis = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
-            $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
-        });
+        $('#kelompok-input').on('change', function() {
+    let selectedValue = $(this).val().toLowerCase().trim();
+    $('#tbl_ruang tbody tr').each(function() {
+      let namaJenis = $(this).find('td:nth-child(2)').text().toLowerCase().trim();
+      $(this).toggle(selectedValue === '' || namaJenis.includes(selectedValue));
     });
+  });
 
             // Detail button event
             $('body').on('click', '#btn-detail-ruang', function() {

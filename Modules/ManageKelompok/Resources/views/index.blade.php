@@ -123,21 +123,6 @@
                     </div>
 
                     <div class="mb-3">
-                        <label for="tipeKelompok" class="form-label">Tipe Kelompok</label>
-                        <select class="form-control @error('tipe_kelompok') is-invalid @enderror" id="tipeKelompok" name="tipe_kelompok" required>
-                            <option value="">Select Tipe Kelompok</option> <!-- Placeholder option -->
-                            @foreach($tipe as $item)
-                                <option value="{{ $item->id_tipe }}" {{ old('tipe_kelompok') == $item->id_tipe ? 'selected' : '' }}>
-                                    {{ $item->nama_tipe_yayasan }}
-                                </option> <!-- Replace 'nama_tipe_yayasan' with the appropriate attribute -->
-                            @endforeach
-                        </select>
-                        @error('tipe_kelompok')
-                            <div class="alert alert-danger mt-2">{{ $message }}</div>
-                        @enderror
-                    </div>
-
-                    <div class="mb-3">
                         <label for="imageKelompok" class="form-label">Upload Gambar (optional)</label>
                         <input type="file" class="form-control @error('image') is-invalid @enderror" id="imageKelompok" name="image" accept="image/*">
                         <small>Gambar Minimal 2 Mb</small>

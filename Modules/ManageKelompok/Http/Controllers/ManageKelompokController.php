@@ -50,7 +50,6 @@ class ManageKelompokController extends Controller
     // Define the validation rules
     $validator = Validator::make($request->all(), [
         'nama_kelompok' => 'required|string|max:255|unique:kelompoks,nama_kelompok_yayasan', // Ensure unique nama_kelompok in kelompok table
-        'tipe_kelompok' => 'required|exists:tipes,id_tipe',
         'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048', // Validate image
     ]);
 
@@ -82,7 +81,6 @@ class ManageKelompokController extends Controller
         $kelompok = Kelompok::create([
             'id_kelompok' => $idToUse,
             'nama_kelompok_yayasan' => $request->nama_kelompok,
-            'id_tipe' => $request->tipe_kelompok,
             'foto_kelompok' => $imagePath // Ensure the database column exists
         ]);
 
