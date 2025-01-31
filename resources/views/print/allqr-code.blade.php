@@ -15,7 +15,7 @@
                                 <div>Unit: {{ $fa->Institusi->nama_institusi }}</div>
                                 <div>Kelompok: {{ $fa->Kelompok->nama_kelompok_yayasan }}</div>
                                 <div>Jenis: {{ $fa->Jenis->nama_jenis_yayasan }}</div>
-                                <div>Ruang: {{ $fa->Ruang->nama_ruang_yayasan }}</div>
+                                <div>Ruang: {{ $fa->Ruang->nama_ruang }}</div>
                                 <div>Type: {{ $fa->Tipe->nama_tipe_yayasan }}</div>
                             </div>
                         </div>

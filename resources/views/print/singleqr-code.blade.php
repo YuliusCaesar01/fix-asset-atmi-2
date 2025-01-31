@@ -2,30 +2,20 @@
     <div class="content">
         <div class="container">
             <div class="card-grid">
-                <div class="col-12">
-                    <div class="card">
-                        <!-- QR Code Section -->
-                        <div class="qr-code">
-                            <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code">
-                        </div>
-
-                        <!-- Text Description Section -->
-                        <div class="info">
-                            <div class="title">Unit ke {{ $unitke }}</div>
-                            
-                            <div class="details">
-                                <div>
-                                    Kode FA: 
-                                    <span class="badge">{{ $kodebaru }}</span>
-                                </div>
-
-                                <div>Lokasi: <span>{{ $asset->lokasi->nama_lokasi_yayasan }}</span></div>
-                                <div>Unit: <span>{{ $asset->Institusi->nama_institusi }}</span></div>
-                                <div>Kelompok: <span>{{ $asset->Kelompok->nama_kelompok_yayasan }}</span></div>
-                                <div>Jenis: <span>{{ $asset->Jenis->nama_jenis_yayasan }}</span></div>
-                                <div>Ruang: <span>{{ $asset->Ruang->nama_ruang_yayasan }}</span></div>
-                                <div>Type: <span>{{ $asset->Tipe->nama_tipe_yayasan }}</span></div>
-                            </div>
+                <div class="card">
+                    <div class="qr-code">
+                        <img src="data:image/png;base64,{{ $qrCode }}" alt="QR Code">
+                    </div>
+                    <div class="info">
+                        <div class="title">Unit ke {{ $unitke }}</div>
+                        <div class="details">
+                            <div>Kode FA: {{ $kodebaru }}</div>
+                            <div>Lokasi: {{ $asset->lokasi->nama_lokasi_yayasan }}</div>
+                            <div>Unit: {{ $asset->Institusi->nama_institusi }}</div>
+                            <div>Kelompok: {{ $asset->Kelompok->nama_kelompok_yayasan }}</div>
+                            <div>Jenis: {{ $asset->Jenis->nama_jenis_yayasan }}</div>
+                            <div>Ruang: {{ $asset->Ruang->nama_ruang}}</div>
+                            <div>Type: {{ $asset->Tipe->nama_tipe_yayasan }}</div>
                         </div>
                     </div>
                 </div>
@@ -36,40 +26,58 @@
 
 <style>
     @page {
-        size: A4;
-        margin: 0.5in;
+        size: 70mm 50mm;
+        margin: 0;
     }
 
     body {
         margin: 0;
         padding: 0;
+        font-family: Arial, sans-serif;
+        width: 70mm;
+        height: 50mm;
+        font-weight: bold;
     }
 
     .content-wrapper {
-        width: 100%;
+        width: 70mm;
+        height: 50mm;
         padding: 0;
     }
 
     .container {
-        width: 100%;
-        max-width: 100%;
-        margin: 0 auto;
+        width: 70mm;
+        height: 50mm;
+        margin: 0;
+        padding: 0;
+    }
+
+    .card-grid {
+        display: block;
+        width: 70mm;
+        height: 50mm;
     }
 
     .card {
         display: flex;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        padding: 10px;
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border: none;
+        padding: 0;
         background: white;
-        height: 120px;
-        page-break-inside: avoid;
+        width: 70mm;
+        height: 50mm;
+        page-break-after: always;
     }
 
     .qr-code {
-        width: 100px;
-        height: 100px;
-        margin-right: 10px;
+        width: 30mm;
+        height: 30mm;
+        margin-left: 2mm;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 
     .qr-code img {
@@ -79,45 +87,30 @@
     }
 
     .info {
-        flex: 1;
-        font-size: 11px;
+        font-size: 6.5pt;
         line-height: 1.2;
+        text-align: left;
+        margin-left: 2mm;
+        width: 45mm;
     }
 
     .title {
         font-weight: bold;
-        margin-bottom: 4px;
+        margin-bottom: 0.5mm;
+        font-size: 6.5pt;
     }
 
     .details div {
-        margin-bottom: 2px;
-    }
-
-    .badge {
-        background-color: #17a2b8;
-        color: white;
-        padding: 1px 4px;
-        border-radius: 3px;
-        font-size: 10px;
-    }
-
-    .card-grid {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 15px;
-        width: 100%;
+        margin-bottom: 0.2mm;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        font-size: 6.5pt;
     }
 
     @media print {
-        .card-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
-
         .card {
-            break-inside: avoid;
-            page-break-inside: avoid;
+            break-after: page;
+            page-break-after: always;
         }
 
         body {
@@ -128,7 +121,19 @@
 </style>
 
 <script>
+    function setPageSize(size) {
+        const styleElement = document.createElement('style');
+        styleElement.textContent = `
+            @page {
+                size: ${size};
+                margin: 0;
+            }
+        `;
+        document.head.appendChild(styleElement);
+    }
+
     window.onload = function() {
+        setPageSize('70mm 50mm');
         window.print();
         window.onafterprint = function() {
             window.history.back();
