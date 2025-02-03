@@ -10,101 +10,108 @@ use App\Models\FixedAsset;
 class QRCodeController extends Controller
 {
     public function generateQRCode(Request $request)
-    {
-        $fa = FixedAsset::where('kode_fa', $request->kode_fa)->first();
-    
-        if (!$fa) {
-            return redirect()->back()->withErrors('Fixed asset not found.');
-        }
-    
-        if ($request->action === 'single') {
-            $kode = $fa->kode_fa;
-    
-            // Potong kode asli menjadi hanya bagian yang diperlukan
-            $kode_awal = substr($kode, 0, -7);
-    
-            // Ambil jumlah unit
-            $jumlah_unit = $request->unit;
-    
-            // Ubah jumlah unit menjadi 3 digit (misalnya, 3 menjadi 003)
-            $jumlah_unit_formatted = str_pad($jumlah_unit, 3, '0', STR_PAD_LEFT);
-    
-            // Gabungkan kode awal dengan jumlah unit
-            $kode_baru = $kode_awal . $jumlah_unit_formatted;
-    
-            // Generate URL for QR code
-            $baseUrl = route('aset.detailbarcode', ['kode_fa' => $fa->kode_fa, 'kode_baru' => $kode_baru]);
-            $fullUrl = $baseUrl;
-    
-            // Create a new QR code instance
-            $qrCode = new QrCode($fullUrl);
-    
-            // Set the size of the QR code (in pixels)
-            $qrCode->setSize(200); // 200x200 pixels
-    
-            // Set the margin around the QR code
-            $qrCode->setMargin(10); // 10 pixels margin
-    
-            // Generate the QR code
-            $writer = new PngWriter();
-            $qrCodeImage = $writer->write($qrCode)->getString();
-    
-            // Encode QR code image in Base64 for embedding in HTML
-            $base64QrCode = base64_encode($qrCodeImage);
-    
-            return view('print.singleqr-code', [
-                'qrCode' => $base64QrCode,
-                'asset' => $fa,
-                'kodebaru' => $kode_baru,
-                'unitke' => $request->unit
-            ]);
-        }
-    
-        if ($request->action === 'all') {
-            $kode_awal = substr($fa->kode_fa, 0, -7);
-            $jumlah_unit = $fa->jumlah_unit;
-            $qrCodes = [];
+{
+    $fa = FixedAsset::where('kode_fa', $request->kode_fa)->first();
+
+    if (!$fa) {
+        return redirect()->back()->withErrors('Fixed asset not found.');
+    }
+
+    if ($request->action === 'single') {
+        $kode = $fa->kode_fa;
         
-            for ($i = 1; $i <= $jumlah_unit; $i++) {
-                // Ubah nomor unit menjadi 3 digit
+        // Get base code without unit numbers
+        $kode_base = substr($kode, 0, strrpos($kode, '-'));
+        
+        // Add the requested unit number
+        $kode_baru = $kode_base . '-' . str_pad($request->unit, 3, '0', STR_PAD_LEFT);
+
+        // Generate URL for QR code
+        $baseUrl = route('aset.detailbarcode', ['kode_fa' => $fa->kode_fa, 'kode_baru' => $kode_baru]);
+        $fullUrl = $baseUrl;
+
+        // Create QR code
+        $qrCode = new QrCode($fullUrl);
+        $qrCode->setSize(200);
+        $qrCode->setMargin(10);
+
+        // Generate and encode QR code
+        $writer = new PngWriter();
+        $qrCodeImage = $writer->write($qrCode)->getString();
+        $base64QrCode = base64_encode($qrCodeImage);
+
+        return view('print.singleqr-code', [
+            'qrCode' => $base64QrCode,
+            'asset' => $fa,
+            'kodebaru' => $kode_baru,
+            'unitke' => $request->unit
+        ]);
+    }
+
+    if ($request->action === 'all') {
+        // Split the kode_fa by hyphen
+        $parts = explode('-', $fa->kode_fa);
+        $base_code = $parts[0]; // 02.01.002.06.011.006
+        
+        $qrCodes = [];
+        
+        // Check if there's a range (e.g., 001-003) or just a single unit (001)
+        if (count($parts) === 3) {
+            // Range case: 02.01.002.06.011.006-001-003
+            $start_unit = intval($parts[1]);
+            $end_unit = intval($parts[2]);
+            
+            // Generate QR codes for the range
+            for ($i = $start_unit; $i <= $end_unit; $i++) {
                 $unit_formatted = str_pad($i, 3, '0', STR_PAD_LEFT);
-        
-                // Gabungkan kode awal dengan unit
-                $kode_baru = $kode_awal . $unit_formatted;
-        
-                // Generate URL for QR code
-                $baseUrl = route('aset.detailbarcode', ['kode_fa' => $fa->kode_fa, 'kode_baru' => $kode_baru]);
-                $fullUrl = $baseUrl;
-        
+                $kode_baru = $base_code . '-' . $unit_formatted;
+                
                 // Generate QR code for each unit
-                $qrCode = new QrCode($fullUrl);
+                $baseUrl = route('aset.detailbarcode', ['kode_fa' => $fa->kode_fa, 'kode_baru' => $kode_baru]);
+                $qrCode = new QrCode($baseUrl);
                 $qrCode->setSize(200);
                 $qrCode->setMargin(10);
-        
-                // Write QR code and encode as Base64
+                
                 $writer = new PngWriter();
                 $qrCodeImage = $writer->write($qrCode)->getString();
                 $base64QrCode = base64_encode($qrCodeImage);
-        
+                
                 $qrCodes[] = [
                     'kodebaru' => $kode_baru,
                     'unitke' => $i,
                     'qrCode' => $base64QrCode
                 ];
             }
-        
-        
-            return view('print.allqr-code', [
-                'assets' => $qrCodes,
-                'fa' => $fa
-            ]);
+        } else {
+            // Single unit case: 02.01.002.06.011.006-001
+            $unit = $parts[1];
+            $kode_baru = $fa->kode_fa; // Use the original kode_fa
+            
+            // Generate single QR code
+            $baseUrl = route('aset.detailbarcode', ['kode_fa' => $fa->kode_fa, 'kode_baru' => $kode_baru]);
+            $qrCode = new QrCode($baseUrl);
+            $qrCode->setSize(200);
+            $qrCode->setMargin(10);
+            
+            $writer = new PngWriter();
+            $qrCodeImage = $writer->write($qrCode)->getString();
+            $base64QrCode = base64_encode($qrCodeImage);
+            
+            $qrCodes[] = [
+                'kodebaru' => $kode_baru,
+                'unitke' => intval($unit),
+                'qrCode' => $base64QrCode
+            ];
         }
-        
-    
-        return redirect()->back()->withErrors('Invalid QR code generation request.');
+
+        return view('print.allqr-code', [
+            'assets' => $qrCodes,
+            'fa' => $fa
+        ]);
     }
-    
-    
+
+    return redirect()->back()->withErrors('Invalid QR code generation request.');
+} 
 
       
     private function generateQRCodeForUnit($fa, $unit)
