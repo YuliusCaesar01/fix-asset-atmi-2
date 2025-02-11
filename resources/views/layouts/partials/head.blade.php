@@ -3,7 +3,7 @@
 
 <head>
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-  <title>@yield('title') FixAsset ATMI by Daniel</title>
+  <title>@yield('title') FixAsset ATMI by IT YKBS</title>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"

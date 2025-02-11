@@ -28,7 +28,7 @@
 
 <style>
     @page {
-        size: 70mm 50mm; /* Set page size to 5mm x 7mm */
+        size: 70mm 30mm; /* Set page size to 5mm x 7mm */
         margin: 0; /* Remove all margins */
     }
 
@@ -37,19 +37,19 @@
         padding: 0;
         font-family: Arial, sans-serif;
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         font-weight: bold;
     }
 
     .content-wrapper {
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         padding: 0;
     }
 
     .container {
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         margin: 0;
         padding: 0;
     }
@@ -57,7 +57,7 @@
     .card-grid {
         display: block;
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
     }
 
     .card {
@@ -69,7 +69,7 @@
     padding: 0;
     background: white;
     width: 70mm;
-    height: 50mm;
+    height: 30mm;
     page-break-after: always;
 }
 
@@ -136,7 +136,7 @@
 
     window.onload = function() {
         // Set the desired page size to 5mm x 7mm
-        setPageSize('70mm 50mm');
+        setPageSize('70mm 30mm');
 
         // Trigger the print function
         window.print();
