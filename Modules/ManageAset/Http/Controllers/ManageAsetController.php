@@ -21,6 +21,7 @@ use Endroid\QrCode\Writer\PngWriter;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Support\Renderable;
+use Modules\ManageAset\Exports\FixedAssetExport;
 
 
 class ManageAsetController extends Controller
@@ -78,6 +79,11 @@ class ManageAsetController extends Controller
     return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang', 'selectedValues'), [
         'menu' => $this->menu
     ]);
+}
+
+public function exportToExcel()
+{
+    return Excel::download(new FixedAssetExport, 'FixedAssetData.xlsx');
 }
 
 public function getJenisByKelompok3(Request $request)

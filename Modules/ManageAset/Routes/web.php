@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use Modules\ManageAset\Http\Controllers\ManageAsetController;
 
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -44,4 +45,9 @@ Route::get('/get-jenis/{id_kelompok}', [ManageAsetController::class, 'getJenisBy
      Route::get('/get-tipe-by-jenis', [ManageAsetController::class, 'getTipeByJenis1'])
      ->name('getTipeByJenis1');
 
+
+});
+
+Route::group(['middleware' => 'web'], function () {
+    Route::get('/manageaset/export', [ManageAsetController::class, 'exportToExcel'])->name('manageaset.export');
 });
