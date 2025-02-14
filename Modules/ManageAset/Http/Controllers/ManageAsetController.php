@@ -12,11 +12,13 @@ use GuzzleHttp\Client;
 use App\Models\Kelompok;
 use App\Models\Institusi;
 use App\Models\FixedAsset;
+use App\Models\UnitDetail;
 use Endroid\QrCode\QrCode;
 use App\Imports\ImportItem;
 use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Endroid\QrCode\Writer\PngWriter;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
@@ -292,86 +294,72 @@ public function getJenisByKelompok1($kelompokId)
      * @return Renderable
      */
     public function store(Request $request)
-    {
-        
-            // Validasi data yang masuk
-            $request->validate([
-                '_token' => 'required',
-                'instansi' => 'required|string|max:255',
-                'id_lokasi' => 'required|integer',
-                'id_ruang' => 'required|integer',
-                'id_tipe' => 'required|integer',
-                'id_kelompok' => 'required|integer',
-                'id_jenis' => 'required|integer',
-                'unit_asal' => 'nullable|string', 
-                'jumlah_unit' => 'required|integer|min:1', // Validasi jumlah unit
-                'nama_barang' => 'required|string|max:255',
-                'tahun_diterima' => 'required|integer',
-                'no_permaintaan' => 'required|string|max:255',
-                'des_barang' => 'required|string',
-                'status_transaksi' => 'nullable|string|max:255',
-                'status_barang' => 'required|string|max:255',
-            ]);
-        
-            // Proses upload foto barang
-       $fotoPath = null;
-    if ($request->hasFile('foto_barang')) {
-        // Generate a unique file name
-        $fileName = time() . '_' . $request->file('foto_barang')->getClientOriginalName();
-        // Move the uploaded file to the desired location in `public/uploads/photos/`
-        $request->file('foto_barang')->move(public_path('fotofixaset'), $fileName);
-        // Save the public URL for the file
-        $fotoPath = url('fotofixaset' . $fileName);
-    }
+{
+    try {
+        // Validate initial data
+        $request->validate([
+            'id_lokasi' => 'required|integer',
+            'id_ruang' => 'required|integer',
+            'id_tipe' => 'required|integer',
+            'id_kelompok' => 'required|integer',
+            'id_jenis' => 'required|integer',
+            'unit_asal' => 'nullable|string',
+            'jumlah_unit' => 'required|integer|min:1',
+            'nama_barang' => 'required|string|max:255',
+            'tahun_diterima' => 'required|integer',
+            'no_permaintaan' => 'required|string|max:255',
+            'des_barang' => 'required|string',
+            'status_transaksi' => 'nullable|string|max:255',
+            'status_barang' => 'required|string|max:255',
+          
+        ]);
 
-            // Mengambil data terkait untuk membentuk kode aset
-            $kode_institusi = Institusi::find($request->instansi)->kode_institusi;
-            $kode_tipe = Tipe::find($request->id_tipe)->kode_tipe;
-            $kode_kelompok = Kelompok::find($request->id_kelompok)->kode_kelompok;
-            $kode_jenis = Jenis::find($request->id_jenis)->kode_jenis;
-            $kode_lokasi = Lokasi::find($request->id_lokasi)->kode_lokasi;
-            $kode_ruang = Ruang::find($request->id_ruang)->kode_ruang;
-        
-            // Menghitung jumlah aset untuk menentukan nomor urut
-            $kode_max = FixedAsset::where('id_institusi', $request->instansi)
-                ->where('id_tipe', $request->id_tipe)
-                ->where('id_kelompok', $request->id_kelompok)
-                ->where('id_jenis', $request->id_jenis)
-                ->where('id_lokasi', $request->id_lokasi)
-                ->where('id_ruang', $request->id_ruang)
-                ->count();
-                
+        // Handle photo upload
+        $fotoPath = null;
+        if ($request->hasFile('foto_barang')) {
+            $fileName = time() . '_' . $request->file('foto_barang')->getClientOriginalName();
+            $request->file('foto_barang')->move(public_path('fotofixaset'), $fileName);
+            $fotoPath = 'fotofixaset/' . $fileName; // Fixed path construction
+        }
 
-                // Nomor awal urutan
-                $nomor_awal = '001'; // Nomor awal selalu dimulai dari 001
+        // Get all required codes
+        $kode_institusi = Institusi::findOrFail($request->instansi)->kode_institusi;
+        $kode_tipe = Tipe::findOrFail($request->id_tipe)->kode_tipe;
+        $kode_kelompok = Kelompok::findOrFail($request->id_kelompok)->kode_kelompok;
+        $kode_jenis = Jenis::findOrFail($request->id_jenis)->kode_jenis;
+        $kode_lokasi = Lokasi::findOrFail($request->id_lokasi)->kode_lokasi;
+        $kode_ruang = Ruang::findOrFail($request->id_ruang)->kode_ruang;
 
-                // Periksa jumlah unit
-                if ($request->jumlah_unit > 1) {
-                    // Nomor akhir sesuai jumlah unit
-                    $nomor_akhir = str_pad($request->jumlah_unit, 3, '0', STR_PAD_LEFT);
-                    $no_urut = $nomor_awal . '-' . $nomor_akhir;
-                } else {
-                    // Jika jumlah unit = 1, gunakan hanya nomor awal
-                    $no_urut = $nomor_awal;
-                }
-        
-            // Membentuk kode aset
-            $kode_fa = $kode_lokasi . "." . $kode_institusi . "." . $kode_ruang . "." . $kode_kelompok . "." . $kode_jenis . "." . $kode_tipe . "-" . $no_urut;
-        
-            // Membuat ID unik untuk aset
-            $idFa = Str::random(32);
-        
-            // Menentukan status aset berdasarkan peran pengguna
-            $status_fa = auth()->user()->hasRole('superadmin') ? 1 : 0;
-        
-            // Simpan data ke dalam database
-            FixedAsset::create([
+        // Generate unit numbering
+        $nomor_awal = '001';
+        $no_urut = $request->jumlah_unit > 1 
+            ? $nomor_awal . '-' . str_pad($request->jumlah_unit, 3, '0', STR_PAD_LEFT)
+            : $nomor_awal;
+
+        // Generate kode_fa
+        $kode_fa = implode('.', [
+            $kode_lokasi,
+            $kode_institusi,
+            $kode_ruang,
+            $kode_kelompok,
+            $kode_jenis,
+            $kode_tipe
+        ]) . '-' . $no_urut;
+
+        // Generate unique ID
+        $idFa = Str::random(32);
+
+        // Wrap in database transaction
+        DB::beginTransaction();
+        try {
+            // Create main asset record
+            $fixedAsset = FixedAsset::create([
                 'unit_asal' => $request->unit_asal,
-                 'jumlah_unit' => $request->jumlah_unit,
+                'jumlah_unit' => $request->jumlah_unit,
                 'id_fa' => $idFa,
-                'status_fa' => $status_fa,
+                'status_fa' => auth()->user()->hasRole('superadmin') ? 1 : 0,
                 'kode_fa' => $kode_fa,
-                'id_user' =>  auth()->user()->id,
+                'id_user' => auth()->user()->id,
                 'id_divisi' => auth()->user()->id_divisi,
                 'id_institusi' => $request->instansi,
                 'id_lokasi' => $request->id_lokasi,
@@ -387,10 +375,36 @@ public function getJenisByKelompok1($kelompokId)
                 'status_barang' => $request->status_barang,
                 'foto_barang' => $fotoPath,
             ]);
-        
-            // Redirect atau return response
+
+            // Create unit details records
+            for ($i = 1; $i <= $request->jumlah_unit; $i++) {
+                $unit_kode = $kode_fa . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+                
+                UnitDetail::create([
+                    'id_fa' => $idFa,
+                    'kode_fa' => $unit_kode,
+                    'unit_number' => $i,
+                    'merk' => $request->input("merk.{$i}"),
+                    'seri' => $request->input("seri.{$i}"),
+                ]);
+            }
+
+            DB::commit();
             return $this->index($request)->with('success', 'Data berhasil ditambahkan!');
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()
+                ->withInput()
+                ->withErrors('Terjadi kesalahan saat menyimpan data: ' . $e->getMessage());
         }
+
+    } catch (\Exception $e) {
+        return redirect()->back()
+            ->withInput()
+            ->withErrors('Terjadi kesalahan: ' . $e->getMessage());
+    }
+}
 
     private function isValidDataStructure($data)
     {

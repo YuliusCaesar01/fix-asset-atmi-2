@@ -214,6 +214,17 @@
                                                     <div class="invalid-feedback">Jumlah unit wajib diisi dan harus berupa angka.</div>
                                                 </div>
                                             </div>
+                                                <!-- Add this to your create form -->
+                                                <div class="form-group row">
+                                                    <label for="unitDetails" class="col-sm-2 col-form-label">
+                                                        Unit Details</label>
+                                                    <div class="card-body">
+                                                        <div id="unitDetailsContainer">
+                                                            <!-- Unit detail fields will be generated here -->
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                           
                                             <div class="col-md-6">
                                                 <div class="form-group">
                                                     <label>Status Kondisi Barang</label>
@@ -274,6 +285,43 @@
 @endsection
 @section('scripttambahan')
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function() {
+        // Function to generate unit detail fields
+        function generateUnitFields(count) {
+            let container = $('#unitDetailsContainer');
+            container.empty();
+            
+            for (let i = 1; i <= count; i++) {
+                container.append(`
+                    <div class="row mb-3">
+                        <div class="col-md-12">
+                            <h5>Unit ${i}</h5>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Merk Unit ${i}</label>
+                                <input type="text" class="form-control" name="merk[${i}]" placeholder="Enter merk">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Seri Unit ${i}</label>
+                                <input type="text" class="form-control" name="seri[${i}]" placeholder="Enter seri">
+                            </div>
+                        </div>
+                    </div>
+                `);
+            }
+        }
+    
+        // Listen for changes to jumlah_unit input
+        $('#jumlah_unit').on('change', function() {
+            let count = parseInt($(this).val()) || 0;
+            generateUnitFields(count);
+        });
+    });
+    </script>
 <script>
 $(document).ready(function() {
     // Store all ruang options in a variable when page loads

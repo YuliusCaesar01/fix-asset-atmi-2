@@ -60,4 +60,9 @@ class FixedAsset extends Model
         return $this->belongsTo(User::class, 'id_user');
     }
 
+    public function unitDetails()
+    {
+        return $this->hasMany(UnitDetail::class, 'id_fa', 'id_fa');
+    }
+
 }

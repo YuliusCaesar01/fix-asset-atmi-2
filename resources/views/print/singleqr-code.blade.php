@@ -16,6 +16,8 @@
                             <div>Jenis: {{ $asset->Jenis->nama_jenis_yayasan }}</div>
                             <div>Ruang: {{ $asset->Ruang->nama_ruang}}</div>
                             <div>Type: {{ $asset->Tipe->nama_tipe_yayasan }}</div>
+                            @if($unitDetail->merk)<div>Merk: {{ $unitDetail->merk }}</div>@endif
+                            @if($unitDetail->seri)<div>Seri: {{ $unitDetail->seri }}</div>@endif
                         </div>
                     </div>
                 </div>
