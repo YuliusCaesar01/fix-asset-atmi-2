@@ -151,7 +151,7 @@
                         <div class="card-body">
                            
                             <table id="tbl_permintaanfa" class="table table-striped table-sm" id="tbl_fa">
-                                <a href="{{ route('manageaset.export') }}" class="btn btn-success mb-2">
+                                <a href="{{ route('manageaset.export') }}?{{ http_build_query(request()->all()) }}" class="btn btn-success mb-2">
                                     <i class="fas fa-file-excel"></i> Export to Excel
                                 </a>
                                 <thead>

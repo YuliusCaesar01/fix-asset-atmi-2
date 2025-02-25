@@ -53,40 +53,82 @@ class ManageAsetController extends Controller
         'tipe' => $tipe->where('id_tipe', $request->id_tipe)->first(),
     ];
 
-    $query = FixedAsset::query();
-
-    // Apply filters if present
-    if ($request->filled('id_institusi')) {
-        $query->where('id_institusi', $request->id_institusi);
+    if ($request->has('id_lokasi')) {
+        session(['id_lokasi' => $request->id_lokasi]);
     }
+    if ($request->has('id_institusi')) {
+        session(['id_institusi' => $request->id_institusi]);
+    }
+    if ($request->has('id_ruang')) {
+        session(['id_ruang' => $request->id_ruang]);
+    }
+    if ($request->has('id_kelompok')) {
+        session(['id_kelompok' => $request->id_kelompok]);
+    }
+    if ($request->has('id_jenis')) {
+        session(['id_jenis' => $request->id_jenis]);
+    }
+    if ($request->has('id_tipe')) {
+        session(['id_tipe' => $request->id_tipe]);
+    }
+    
+    // Build query with filters
+    $query = FixedAsset::query();
+    
+    // Apply filters if they exist
     if ($request->filled('id_lokasi')) {
         $query->where('id_lokasi', $request->id_lokasi);
+        $selectedValues['lokasi'] = Lokasi::find($request->id_lokasi);
     }
+    
+    if ($request->filled('id_institusi')) {
+        $query->where('id_institusi', $request->id_institusi);
+        $selectedValues['institusi'] = Institusi::find($request->id_institusi);
+    }
+    
     if ($request->filled('id_ruang')) {
         $query->where('id_ruang', $request->id_ruang);
+        $selectedValues['ruang'] = Ruang::find($request->id_ruang);
     }
+    
     if ($request->filled('id_kelompok')) {
         $query->where('id_kelompok', $request->id_kelompok);
+        $selectedValues['kelompok'] = Kelompok::find($request->id_kelompok);
     }
+    
     if ($request->filled('id_jenis')) {
         $query->where('id_jenis', $request->id_jenis);
+        $selectedValues['jenis'] = Jenis::find($request->id_jenis);
     }
+    
     if ($request->filled('id_tipe')) {
         $query->where('id_tipe', $request->id_tipe);
+        $selectedValues['tipe'] = Tipe::find($request->id_tipe);
     }
-
-    // Fetch data
-    $aset = $query->orderBy('kode_fa')->get();
+    
+    // Get the filtered assets
+    $aset = $query->get();
 
     return view('manageaset::index', compact('aset', 'tipe', 'lokasi', 'institusi', 'kelompok', 'jenis', 'ruang', 'selectedValues'), [
         'menu' => $this->menu
     ]);
 }
 
+
 public function exportToExcel()
-{
-    return Excel::download(new FixedAssetExport, 'FixedAssetData.xlsx');
-}
+    {
+        // Get current filter values from session or request
+        $filters = [
+            'id_lokasi' => request('id_lokasi', session('id_lokasi')),
+            'id_institusi' => request('id_institusi', session('id_institusi')),
+            'id_ruang' => request('id_ruang', session('id_ruang')),
+            'id_kelompok' => request('id_kelompok', session('id_kelompok')),
+            'id_jenis' => request('id_jenis', session('id_jenis')),
+            'id_tipe' => request('id_tipe', session('id_tipe')),
+        ];
+        
+        return Excel::download(new FixedAssetExport($filters), 'FixedAssetData.xlsx');
+    }
 
 public function getJenisByKelompok3(Request $request)
 {
