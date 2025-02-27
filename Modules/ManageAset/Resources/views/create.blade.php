@@ -57,27 +57,27 @@
                                             </div>
                                         @endif
                                         <input type="hidden" id="id_fa">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="form-group">
+                                                        <label>Lokasi</label>
+                                                        <select id="lokasi" name="id_lokasi" class="form-control select2" style="width: 100%;" required>
+                                                            <option value="">- Pilih Lokasi -</option>
+                                                            @foreach($lokasi as $item)
+                                                                <option value="{{ $item->id_lokasi }}">{{ $item->nama_lokasi_yayasan }}</option>
+                                                            @endforeach
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
                                         <div class="row">
                                             <div class="col-6">
                                                 <div class="form-group">
-                                                    <label>Instansi</label>
+                                                    <label>Institusi</label>
                                                     <select id="instansi" name="instansi" class="form-control" style="width: 100%;" required>
                                                         <option value="">- Pilih Instansi -</option>
                                                         @foreach($institusi as $item)
                                                             <option value="{{ $item->id_institusi }}">{{ $item->nama_institusi }}</option>
-                                                        @endforeach
-                                                    </select>
-                                                </div>
-                                            </div>
-                                        </div>
-                                        <div class="row">
-                                            <div class="col-6">
-                                                <div class="form-group">
-                                                    <label>Lokasi</label>
-                                                    <select id="lokasi" name="id_lokasi" class="form-control select2" style="width: 100%;" required>
-                                                        <option value="">- Pilih Lokasi -</option>
-                                                        @foreach($lokasi as $item)
-                                                            <option value="{{ $item->id_lokasi }}">{{ $item->nama_lokasi_yayasan }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
@@ -97,8 +97,7 @@
                                                     </select>
                                                 </div>
                                             </div>
-                                                <div class="row">
-                                                    <div class="row">
+
                                                         <div class="col-4">
                                                             <div class="form-group">
                                                                 <label>Kelompok</label>
@@ -110,6 +109,7 @@
                                                                 </select>
                                                             </div>
                                                         </div>
+
                                                 <div class="col-4">
                                                     <div class="form-group">
                                                         <label>Jenis</label>
@@ -123,7 +123,6 @@
                                                     </select>
                                                     </div>
                                                 </div>
-                                            </div>
                                             
                                             <div class="col-4">
                                                 <div class="form-group">
@@ -139,8 +138,6 @@
                                                 </div>
                                             </div>
                                            
-                                        </div>
-                                        
                                         <div class="row">
                                             <div class="col-md-4">
                                                 <div class="form-group">

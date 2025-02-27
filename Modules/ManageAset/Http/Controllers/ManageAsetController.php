@@ -598,17 +598,25 @@ public function getJenisByKelompok1($kelompokId)
      * @return Renderable
      */
     public function edit($id_fa)
-    {
-        $fa = FixedAsset::findOrFail($id_fa);
-        $institusi = Institusi::all();
-        $divisi = Divisi::where('id_institusi', $fa->id_institusi)->get();
-        $tipe = Tipe::all();
-        $kelompok = Kelompok::all();
-        $jenis = Jenis::all();
-        $lokasi = Lokasi::all();
-        $ruang = Ruang::all();
-        return view("manageaset::edit", compact('fa', 'institusi', 'divisi', 'tipe', 'kelompok', 'jenis', 'lokasi', 'ruang'), ['menu' => $this->menu]);
-    }
+{
+    $fa = FixedAsset::with('unitDetails')->findOrFail($id_fa);
+    $institusi = Institusi::all();
+    $divisi = Divisi::where('id_institusi', $fa->id_institusi)->get();
+    $tipe = Tipe::with('jenis')->get();
+    $kelompok = Kelompok::all();
+    $jenis = Jenis::with('kelompok')->get();
+    $lokasi = Lokasi::all();
+    $ruang = Ruang::with('institusi')->get();
+
+    return view("manageaset::edit", compact('fa', 'institusi', 'divisi', 'tipe', 'kelompok', 'jenis', 'lokasi', 'ruang'),['menu' => $this->menu]);
+}
+
+
+    public function unitDetails()
+{
+    return $this->hasMany(UnitDetail::class, 'id_fa', 'id_fa');
+}
+
 
     /**
      * Update the specified resource in storage.
@@ -622,7 +630,7 @@ public function getJenisByKelompok1($kelompokId)
 
     // Define validation rules
     $request->validate([
-        "institusi" => 'required',
+        "instansi" => 'required',
         "id_tipe" => 'required',
         "id_kelompok" => 'required',
         "id_jenis" => 'required',
@@ -634,49 +642,96 @@ public function getJenisByKelompok1($kelompokId)
         "status_transaksi" => 'required',
         "status_barang" => 'required',
         "foto_barang" => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-        "jumlah_unit" => 'required|numeric|min:1', // Add validation for jumlah_unit
+        "jumlah_unit" => 'required|numeric|min:1',
     ]);
 
-    // Handle photo upload
-    if ($request->hasFile('foto_barang')) {
-        // Delete the old photo if it exists
-        if ($fa->foto_barang) {
-            Storage::disk('public')->delete('fotofixaset/' . $fa->foto_barang);
+    DB::beginTransaction();
+    try {
+        // Handle photo upload
+        if ($request->hasFile('foto_barang')) {
+            if ($fa->foto_barang) {
+                Storage::disk('public')->delete('fotofixaset/' . $fa->foto_barang);
+            }
+
+            $file = $request->file('foto_barang');
+            $fileName = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('fotofixaset', $fileName, 'public');
+
+            $fa->foto_barang = $fileName;
+        } else {
+            $fileName = $fa->foto_barang;
         }
 
-        // Get the uploaded file
-        $file = $request->file('foto_barang');
+         // Retrieve required codes
+         $kode_institusi = Institusi::findOrFail($request->instansi)->kode_institusi;
+         $kode_tipe = Tipe::findOrFail($request->id_tipe)->kode_tipe;
+         $kode_kelompok = Kelompok::findOrFail($request->id_kelompok)->kode_kelompok;
+         $kode_jenis = Jenis::findOrFail($request->id_jenis)->kode_jenis;
+         $kode_lokasi = Lokasi::findOrFail($request->id_lokasi)->kode_lokasi;
+         $kode_ruang = Ruang::findOrFail($request->id_ruang)->kode_ruang;
+ 
+         // Generate unit numbering
+         $nomor_awal = '001';
+         $no_urut = $request->jumlah_unit > 1 
+             ? $nomor_awal . '-' . str_pad($request->jumlah_unit, 3, '0', STR_PAD_LEFT)
+             : $nomor_awal;
+ 
+         // Generate new kode_fa
+         $new_kode_fa = implode('.', [
+             $kode_lokasi,
+             $kode_institusi,
+             $kode_ruang,
+             $kode_kelompok,
+             $kode_jenis,
+             $kode_tipe
+         ]) . '-' . $no_urut;
+ 
+         // Update FixedAsset
+         $fa->update([
+             "id_institusi" => $request->instansi,
+             "id_tipe" => $request->id_tipe,
+             "id_kelompok" => $request->id_kelompok,
+             "id_jenis" => $request->id_jenis,
+             "id_lokasi" => $request->id_lokasi,
+             "id_ruang" => $request->id_ruang,
+             "nama_barang" => $request->nama_barang,
+             "foto_barang" => $fileName,
+             "tahun_diterima" => $request->tahun_diterima,
+             "des_barang" => $request->des_barang,
+             "jumlah_unit" => $request->jumlah_unit,
+             "kode_fa" => $new_kode_fa, // Update kode_fa
+         ]);
+ 
 
-        // Use the asset's name as the file name (sanitize it if needed)
-        $fileName = $fa->nama_barang . '.' . $file->getClientOriginalExtension();
+        // Delete old UnitDetails
+        UnitDetail::where('id_fa', $fa->id_fa)->delete();
 
-        // Move the file to the 'public/fotofixaset' folder
-        $file->move(public_path('fotofixaset'), $fileName);
+        // Insert new UnitDetails
+        for ($i = 1; $i <= $request->jumlah_unit; $i++) {
+            $unit_kode = $new_kode_fa . '-' . str_pad($i, 3, '0', STR_PAD_LEFT);
+            
+            UnitDetail::create([
+                'id_fa' => $fa->id_fa,
+                'kode_fa' => $unit_kode,
+                'unit_number' => $i,
+                'merk' => $request->input("merk." . ($i - 1)), // Fix array index issue
+                'seri' => $request->input("seri." . ($i - 1)), // Fix array index issue
+            ]);
+        }
 
-        // Save the new file name in the database
-        $fa->foto_barang = $fileName;
-    } else {
-        $fileName = $fa->foto_barang;
+        DB::commit();
+        return redirect()->route("manageaset.detail", ['kode_fa' => $new_kode_fa])
+            ->with(['success' => 'Data Berhasil Diperbarui. Terima kasih']);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->back()
+            ->withInput()
+            ->withErrors('Terjadi kesalahan saat memperbarui data: ' . $e->getMessage());
     }
-
-    // Update the asset with the new data
-    $fa->update([
-        "id_institusi" => $request->institusi,
-        "id_tipe" => $request->id_tipe,
-        "id_kelompok" => $request->id_kelompok,
-        "id_jenis" => $request->id_jenis,
-        "id_lokasi" => $request->id_lokasi,
-        "id_ruang" => $request->id_ruang,
-        "nama_barang" => $request->nama_barang,
-        "foto_barang" => $fileName,
-        "tahun_diterima" => $request->tahun_diterima,
-        "des_barang" => $request->des_barang,
-        "jumlah_unit" => $request->jumlah_unit, // Save jumlah_unit to the database
-    ]);
-
-    // Redirect with success message
-    return redirect()->route("manageaset.detail", ['kode_fa' => $fa->kode_fa])->with(['success' => 'Data Berhasil Disimpan. Terima kasih']);
 }
+
+
 
 
     /**

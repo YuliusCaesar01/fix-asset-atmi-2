@@ -35,9 +35,9 @@ Route::prefix('aset')->middleware('auth')->group(function () {
     Route::get('/get-ruang/{instansiId}', 'ManageAsetController@getRuang');
     Route::post('/upload-data', [ManageAsetController::class, 'upload'])->name('manageaset.uploadmasal');
     // Route::get('manageaset/create/get-jenis-by-kelompok/{kelompokId}', [ManageAsetController::class, 'getJenisByKelompok'])->name('getJenisByKelompok');
-Route::get('manageaset/create/get-tipe-by-jenis/{jenisId}', [ManageAsetController::class, 'getTipeByJenis'])->name('getTipeByJenis');
+    Route::get('manageaset/create/get-tipe-by-jenis/{jenisId}', [ManageAsetController::class, 'getTipeByJenis'])->name('getTipeByJenis');
 // Route::get('/get-jenis-by-kelompok/{kelompokId}', 'ManageAsetController@getJenisByKelompok1');
-Route::get('/get-jenis/{id_kelompok}', [ManageAsetController::class, 'getJenisByKelompok2']);
+    Route::get('/get-jenis/{id_kelompok}', [ManageAsetController::class, 'getJenisByKelompok2']);
      Route::get('/get-rooms-by-institution', [ManageAsetController::class, 'getRoomsByInstitution'])
      ->name('getRoomsByInstitution');
      Route::get('/get-jenis-by-kelompok', [ManageAsetController::class, 'getJenisByKelompok3'])

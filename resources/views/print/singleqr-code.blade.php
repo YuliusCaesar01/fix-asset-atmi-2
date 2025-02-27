@@ -28,8 +28,8 @@
 
 <style>
     @page {
-        size: 70mm 50mm;
-        margin: 0;
+        size: 70mm 30mm; /* Set page size to 5mm x 7mm */
+        margin: 0; /* Remove all margins */
     }
 
     body {
@@ -37,19 +37,19 @@
         padding: 0;
         font-family: Arial, sans-serif;
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         font-weight: bold;
     }
 
     .content-wrapper {
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         padding: 0;
     }
 
     .container {
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
         margin: 0;
         padding: 0;
     }
@@ -57,30 +57,30 @@
     .card-grid {
         display: block;
         width: 70mm;
-        height: 50mm;
+        height: 30mm;
     }
 
     .card {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        border: none;
-        padding: 0;
-        background: white;
-        width: 70mm;
-        height: 50mm;
-        page-break-after: always;
-    }
+    display: flex;
+    flex-direction: row; /* Change to row layout for horizontal alignment */
+    justify-content: space-between; /* Add space between QR code and text */
+    align-items: center; /* Center-align items vertically */
+    border: none;
+    padding: 0;
+    background: white;
+    width: 70mm;
+    height: 30mm;
+    page-break-after: always;
+}
 
-    .qr-code {
-        width: 30mm;
-        height: 30mm;
-        margin-left: 2mm;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
+.qr-code {
+    width: 30mm;  /* Adjust QR code width */
+    height: 30mm; /* Adjust QR code height */
+    margin-left: 2mm; /* Add some space from the edge */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
     .qr-code img {
         width: 100%;
@@ -89,25 +89,25 @@
     }
 
     .info {
-        font-size: 6.5pt;
-        line-height: 1.2;
-        text-align: left;
-        margin-left: 2mm;
-        width: 45mm;
-    }
+    font-size: 6.5pt;
+    line-height: 1.2;
+    text-align: left; /* Align text to the left */
+    margin-left: 2mm; /* Add spacing between QR code and text */
+    width: 45mm; /* Adjust width to fit the remaining space */
+}
 
-    .title {
-        font-weight: bold;
-        margin-bottom: 0.5mm;
-        font-size: 6.5pt;
-    }
+.title {
+    font-weight: bold;
+    margin-bottom: 0.5mm;
+    font-size: 6.5pt;
+}
 
-    .details div {
-        margin-bottom: 0.2mm;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        font-size: 6.5pt;
-    }
+.details div {
+    margin-bottom: 0.2mm;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    font-size: 6.5pt;
+}
 
     @media print {
         .card {
@@ -128,17 +128,24 @@
         styleElement.textContent = `
             @page {
                 size: ${size};
-                margin: 0;
+                margin: 0; /* Remove margins for exact fit */
             }
         `;
         document.head.appendChild(styleElement);
     }
 
     window.onload = function() {
-        setPageSize('70mm 50mm');
+        // Set the desired page size to 5mm x 7mm
+        setPageSize('70mm 30mm');
+
+        // Trigger the print function
         window.print();
+
+        // Go back to the previous page after printing
         window.onafterprint = function() {
             window.history.back();
         };
     };
 </script>
+
+
