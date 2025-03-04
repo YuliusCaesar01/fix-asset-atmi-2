@@ -85,26 +85,20 @@ $managerasetuser = User::where('role_id', 19)->first();
                             <hr>
                             <h5 class="font-weight-bold text-uppercase">Kategori Barang</h5>
                             <dl class="row">
-                                <dt class="col-sm-4">Tipe</dt>
-                                <dd class="col-sm-8">: {{ $permintaan->id_tipe }} - {{ $permintaan->Tipe->nama_tipe_yayasan }} </dd>
+                                <dt class="col-sm-4">Lokasi</dt>
+                                <dd class="col-sm-8">: {{ $permintaan->id_lokasi }} - {{ $permintaan->Lokasi->nama_lokasi_yayasan }}</dd>
+                                <dt class="col-sm-4">Institusi</dt>
+                                <dd class="col-sm-8">: {{ $permintaan->id_institusi }} - {{ $permintaan->Institusi->nama_institusi }}</dd>
+                                <dt class="col-sm-4">Ruang</dt>
+                                <dd class="col-sm-8">: {{ $permintaan->id_ruang }} - {{ $permintaan->ruang->nama_ruang }}</dd>
                                 <dt class="col-sm-4">Kelompok</dt>
                                 <dd class="col-sm-8">
                                     : {{ $permintaan->id_kelompok }} - {{ $permintaan->Kelompok->nama_kelompok_yayasan }}
                                 </dd>
                                 <dt class="col-sm-4">Jenis</dt>
                                 <dd class="col-sm-8">: {{ $permintaan->id_jenis }} - {{ $permintaan->jenis->nama_jenis_yayasan }}</dd>
-                                <dt class="col-sm-4">Lokasi</dt>
-                                <dd class="col-sm-8">: {{ $permintaan->id_lokasi }} - {{ $permintaan->Lokasi->nama_lokasi_yayasan }}</dd>
-                               @if($permintaan->id_institusi ==  1)
-                                <dt class="col-sm-4">Ruang</dt>
-                                <dd class="col-sm-8">: {{ $permintaan->id_ruang }} - {{ $permintaan->ruang->nama_ruang_yayasan }}</dd>
-                               @elseif($permintaan->id_institusi ==  2)
-                                <dt class="col-sm-4">Ruang</dt>
-                                <dd class="col-sm-8">: {{ $permintaan->id_ruang }} - {{ $permintaan->ruang->nama_ruang_mikael }}</dd>
-                               @else
-                               <dt class="col-sm-4">Ruang</dt>
-                               <dd class="col-sm-8">: {{ $permintaan->id_ruang }} - {{ $permintaan->ruang->nama_ruang_politeknik }}</dd>
-                               @endif
+                                <dt class="col-sm-4">Tipe</dt>
+                                <dd class="col-sm-8">: {{ $permintaan->id_tipe }} - {{ $permintaan->Tipe->nama_tipe_yayasan }} </dd>
                             </dl>
                         </div>
                     </div>
@@ -408,7 +402,10 @@ $managerasetuser = User::where('role_id', 19)->first();
                                                 {{ $permintaan->valid_karyausaha_timestamp ? \Carbon\Carbon::parse($permintaan->valid_karyausaha_timestamp)->diffForHumans() : '' }}
                                             </div>                                                 
                                             <div class="profile-status">
-                                                <img id="profile-img" src="{{ $unitkaryauser->userdetail && $unitkaryauser->userdetail->foto &&  $unitkaryauser->userdetail->foto !== 'default.png' ? asset($unitkaryauser->userdetail->foto) : 'https://as2.ftcdn.net/v2/jpg/00/64/67/27/1000_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg' }}" alt="User Image" class="profile-img" style="width: 95px; height: 95px;">
+                                                <img id="profile-img" src="{{ $unitkaryauser && $unitkaryauser->userdetail && $unitkaryauser->userdetail->foto && $unitkaryauser->userdetail->foto !== 'default.png' 
+                                                    ? asset($unitkaryauser->userdetail->foto) 
+                                                    : 'https://as2.ftcdn.net/v2/jpg/00/64/67/27/1000_F_64672736_U5kpdGs9keUll8CRQ3p3YaEv2M6qkVY5.jpg' }}" 
+                                                alt="User Image" class="profile-img" style="width: 95px; height: 95px;">
                                                                        
                                                               <div class="status-indicator default">
                                                     @switch($permintaan->valid_karyausaha)

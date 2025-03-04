@@ -375,7 +375,7 @@ $unreadCount = Notification::where('id_user_penerima', auth()->user()->id)
                     </div>
                     <div class="form-group">
                         <label for="new_email" class="font-weight-bold">New Email</label>
-                        <input type="email" class="form-control" id="new_email" name="new_email" required>
+                        <input type="email" class="form-control" id="new_email" name="new_email" >
                     </div>
                     <div class="form-group">
                         <label for="ttd" class="font-weight-bold">Upload TTD</label>

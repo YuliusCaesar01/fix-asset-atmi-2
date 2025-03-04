@@ -28,7 +28,7 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Crypt;
 use Carbon\Carbon;
 use App\Models\Notification;
-
+use Illuminate\Support\Facades\Log;
 
 class ManagePermintaanFAController extends Controller
 {
@@ -117,9 +117,6 @@ class ManagePermintaanFAController extends Controller
             ->orderByRaw("CASE WHEN valid_fixaset = 'menunggu' THEN 0 ELSE 1 END")
             ->orderBy('created_at', 'desc')
             ->get();
-        
-        
-        
        
         } elseif($user && $user->role_id == 15){
             $permintaanfa = PermintaanFixedAsset::where('valid_fixaset', 'setuju')
@@ -223,17 +220,23 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
      * Show the form for creating a new resource.
      */
     public function create()
-    {
-        $menu = "SPA";
-        $institusi = Institusi::all();
-        $tipe = Tipe::all();
-        $lokasi = Lokasi::all();
-        $ruang = Ruang::all();
-        $jenis = Jenis::all();
-        $kelompok = Kelompok::all();
+{
+    $menu = "SPA";
+    $user = Auth::user(); // Retrieve the authenticated user
 
-        return view('managepermintaanfa::create', compact('tipe', 'lokasi', 'institusi', 'menu', 'kelompok', 'ruang', 'jenis'));
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
     }
+
+    $institusi = Institusi::where('id_institusi', $user->id_divisi)->get();
+    $tipe = Tipe::with('jenis')->get();
+    $lokasi = Lokasi::all();
+    $ruang = Ruang::where('id_institusi', $user->id_divisi)->get();
+    $jenis = Jenis::with('kelompok')->get();
+    $kelompok = Kelompok::all();
+
+    return view('managepermintaanfa::create', compact('tipe', 'lokasi', 'institusi', 'menu', 'kelompok', 'ruang', 'jenis'));
+}
 
     /**
      * Store a newly created resource in storage.
@@ -253,6 +256,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
         'status_transaksi' => 'required',
         'id_jenis' => 'required',
         'unit_asal' => 'nullable|string', // Unit Asal hanya wajib jika status Pemindahan
+        'unit_tujuan' => 'required|string',
         'jumlah_unit' => 'required|integer|min:1', // Validasi jumlah unit
         'file_pdf' => 'nullable|file|mimes:pdf|max:2048',
     ]);
@@ -296,7 +300,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
     }
 
     // Call mail function to send email for approval
-    $this->mail('approval', $permintaan, $user);
+    // $this->mail('approval', $permintaan, $user);
 
     return redirect()->route('managepermintaanfa.index')->with('success', 'Permintaan berhasil diajukan.');
 }
@@ -377,7 +381,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
             $user = User::where('role_id', 16)->first();
         }
        // Call mail function to send email for approval
-    $this->mail('approval', $permintaan, $user);
+    // $this->mail('approval', $permintaan, $user);
     } elseif ($request->status === 'delayed') {
         // Handle delay
 
@@ -486,7 +490,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
                 $permintaan->tindak_lanjut = $validatedData['tindakLanjut'];
                 $permintaan->save(); // Simpan perubahan ke database
              
-                $this->mail('approval', $permintaan, $user);
+                // $this->mail('approval', $permintaan, $user);
 
                  
 
@@ -494,7 +498,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
              $permintaan->valid_ketuayayasan = 'setuju';
              $permintaan->valid_ketuayayasan_timestamp = Carbon::now();
              $permintaan->tindak_lanjut = $validatedData['tindakLanjut'];
-             $this->mail('approval', $permintaan, $user);
+            //  $this->mail('approval', $permintaan, $user);
               $permintaan->save(); // Simpan perubahan ke database
 
             }
@@ -510,7 +514,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
                 $permintaan->tindak_lanjut = $validatedData['tindakLanjut'];
                 $permintaan->save(); // Simpan perubahan ke database
                 $user = Auth::user();
-                $this->mail('rejection', $permintaan, $user);
+                // $this->mail('rejection', $permintaan, $user);
             }else{
                  $permintaan->valid_ketuayayasan = 'tolak';
                  $permintaan->valid_ketuayayasan_timestamp = Carbon::now();
@@ -518,7 +522,7 @@ return view("managepermintaanfa::detail", compact('permintaan'), ['menu' => $thi
                  $permintaan->tindak_lanjut = $validatedData['tindakLanjut'];
                  $permintaan->save(); // Simpan perubahan ke database
                  $user = Auth::user();
-                 $this->mail('rejection', $permintaan, $user);
+                //  $this->mail('rejection', $permintaan, $user);
             }
         }
 
@@ -687,7 +691,7 @@ public function tindakanbast(Request $request, $id)
     $user = User::where('role_id', 19)->first();
 
    // Call mail function to send email for approval
-    $this->mail('approval', $permintaan, $user);
+    // $this->mail('approval', $permintaan, $user);
  // Parse the timestamp to get the month and year
  $timestamp = Carbon::parse($pfa->valid_dirmanageraset_timestamp);
 
