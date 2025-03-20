@@ -10,10 +10,24 @@
             font-family: Arial, sans-serif;
             font-size: 12px;
         }
+        .form-header-container {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
         .form-header {
             text-align: center;
             font-weight: bold;
-            margin-bottom: 20px;
+            margin: 0 auto;
+            width: fit-content;
+        }
+        .logo {
+            position: absolute;
+            left: 40px; /* Position logo further to the left */
+            top: 50%;
+            transform: translateY(-50%);
+            width: 80px;
+            height: auto;
         }
         .form-table {
             width: 100%;
@@ -56,7 +70,7 @@
             }
         }
     </style>
-       <script>
+    <script>
         // Function to trigger print dialog
         function autoPrint() {
             window.print();
@@ -67,18 +81,22 @@
     </script>
 </head>
 <body class="bg-white text-black">
-
-    <!-- Header -->
-    <div class="form-header">
-        <div style="font-size: 14px;">YAYASAN KARYA BAKTI SURAKARTA</div>
-        <div style="font-size: 14px;">DIREKTORAT MANAJEMEN ASET</div>
-       
-       
-        <div>
-            <span style="font-size: 20px; font-weight: bold;">SURAT PERMINTAAN AKTIVA TETAP</span>
+    <!-- Container for header with absolutely positioned logo -->
+    <div class="form-header-container">
+        <!-- Logo positioned absolutely -->
+        <img src="{{ asset('LogoFixaset.png') }}" alt="Logo" class="logo">
+        
+        <!-- Center-aligned header text -->
+        <div class="form-header">
+            <div style="font-size: 14px;">YAYASAN KARYA BAKTI SURAKARTA</div>
+            <div style="font-size: 14px;">DIREKTORAT MANAJEMEN ASET</div>
+            <div>
+                <span style="font-size: 20px; font-weight: bold;">SURAT PERMINTAAN AKTIVA TETAP</span>
+            </div>
         </div>
+    </div>   
 
-    <!-- Table Content -->
+ <!-- Table Content -->
     <table class="form-table">
         <!-- Row 1: Header Information -->
         <tr>
