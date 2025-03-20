@@ -54,13 +54,15 @@
                         <div class="col-12 col-sm-6">
                             <h4 class="my-3 d-flex align-items-center justify-content-between">
                                 <b>KODE: <span class="badge bg-info fs-6">{{ $fa->kode_fa }}</span></b>
-                                <a href="{{ route('manage-fixaset.edit', $fa->id_fa) }}" class="btn btn-sm btn-outline-primary ms-3">
-                                    Edit <i class="fas fa-edit"></i>
-                                </a>
-                                
-                                
-                                                               
-                            </h4>
+                                <div class="d-flex">
+                                    <a href="{{ route('manage-fixaset.edit', $fa->id_fa) }}" class="btn btn-sm btn-outline-primary me-1">
+                                        Edit <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ route('manageaset.pindahaset', $fa->kode_fa) }}" class="btn btn-sm btn-outline-primary">
+                                        Pindah Aset <i class="fas fa-cog"></i>
+                                    </a>
+                                </div>
+                            </h4>                            
                             <hr>
                             <h5>Kategori Barang</h5>
                             <dl class="row">

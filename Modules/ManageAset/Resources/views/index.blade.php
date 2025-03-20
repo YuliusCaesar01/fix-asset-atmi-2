@@ -163,6 +163,7 @@
                                         <th>Transaksi</th>
                                         <th>Jumlah Aset</th>
                                         <th>Kondisi</th>
+                                        {{-- <th>Tanggal</th> --}}
                                         <th class="w-1"><i class="fas fa-bars"></i></th>
                                     </tr>
                                 </thead>
@@ -178,6 +179,7 @@
                                             <td>{{ $ast->status_transaksi }}</td>
                                             <td><span class="badge bg-secondary">{{ $ast->jumlah_unit  }} </span></td>
                                             <td>{{ $ast->status_barang }}</td>
+                                            {{-- <td>{{ $ast->created_at}}</td> --}}
                                             <td>
                                                 <a href="{{ route('manageaset.detail', $ast->kode_fa) }}"
                                                     title="Detail Aset" class="btn btn-sm btn-light">

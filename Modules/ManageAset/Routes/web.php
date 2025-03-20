@@ -51,3 +51,8 @@ Route::prefix('aset')->middleware('auth')->group(function () {
 Route::group(['middleware' => 'web'], function () {
     Route::get('/manageaset/export', [ManageAsetController::class, 'exportToExcel'])->name('manageaset.export');
 });
+
+Route::get('manageaset/pindahaset/{kode_fa}', [ManageAsetController::class, 'pindahaset'])
+    ->name('manageaset.pindahaset');
+    Route::put('manageaset/updatepindahaset/{id}', [ManageAsetController::class, 'updatepindahaset'])
+    ->name('manageaset.updatepindahaset');

@@ -329,12 +329,6 @@
             filterTipe();
         });
     </script>
-    
-    
-        
-    
-    
-    
    
     @if (session('notification'))
         <script>

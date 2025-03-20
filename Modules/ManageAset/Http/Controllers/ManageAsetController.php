@@ -185,6 +185,158 @@ public function getRoomsByInstitution(Request $request)
         return view("manageaset::detail", compact('fa', 'tipe', 'lokasi', 'institusi'), ['menu' => $this->menu,'barcode' => $base64QrCode, 'code' => $code]);
     }
 
+    public function pindahaset($kode_fa)
+    {
+        $fa = FixedAsset::where('kode_fa', $kode_fa)->first();
+        $institusi = Institusi::all();
+        $tipe = Tipe::all();
+        $lokasi = Lokasi::all();
+        $ruang = Ruang::with('institusi')->get();
+        $code = $kode_fa;
+
+        return view("manageaset::pindahaset", compact('fa', 'tipe', 'lokasi', 'institusi','ruang'), ['menu' => $this->menu,'code' => $code]);
+    }
+
+    public function updatepindahaset(Request $request, $id_fa)
+{
+    $fa = FixedAsset::findOrFail($id_fa);
+
+    // Define validation rules for location fields and quantity
+    $request->validate([
+        "id_lokasi" => 'required',
+        "instansi" => 'required', // This is id_institusi
+        "id_ruang" => 'required',
+        "jumlah_unit" => 'required|numeric|min:1|max:' . $fa->jumlah_unit,
+    ]);
+
+    $requestedUnits = (int)$request->jumlah_unit;
+    $originalUnits = (int)$fa->jumlah_unit;
+
+    DB::beginTransaction();
+    try {
+        // Retrieve required codes for new location
+        $kode_institusi = Institusi::findOrFail($request->instansi)->kode_institusi;
+        $kode_lokasi = Lokasi::findOrFail($request->id_lokasi)->kode_lokasi;
+        $kode_ruang = Ruang::findOrFail($request->id_ruang)->kode_ruang;
+        
+        // Retrieve existing codes for remaining elements
+        $kode_kelompok = Kelompok::findOrFail($fa->id_kelompok)->kode_kelompok;
+        $kode_jenis = Jenis::findOrFail($fa->id_jenis)->kode_jenis;
+        $kode_tipe = Tipe::findOrFail($fa->id_tipe)->kode_tipe;
+        
+        // Extract the base and numbering parts from the existing kode_fa
+        $existing_parts = explode('-', $fa->kode_fa);
+        $base_part = isset($existing_parts[0]) ? $existing_parts[0] : '';
+        $unit_part = isset($existing_parts[1]) ? $existing_parts[1] : '';
+        $count_part = isset($existing_parts[2]) ? (int)$existing_parts[2] : 0;
+        
+        // Build the base code for original location
+        $original_base_code = implode('.', [
+            $fa->lokasi->kode_lokasi,
+            $fa->institusi->kode_institusi,
+            $fa->ruang->kode_ruang,
+            $kode_kelompok,
+            $kode_jenis,
+            $kode_tipe
+        ]);
+        
+        // Build the base code for new location
+        $new_base_code = implode('.', [
+            $kode_lokasi,
+            $kode_institusi,
+            $kode_ruang,
+            $kode_kelompok,
+            $kode_jenis,
+            $kode_tipe
+        ]);
+        
+        // If all units are being transferred
+        if ($requestedUnits == $originalUnits) {
+            // Update the existing record with new location and kode_fa
+            $new_kode_fa = $new_base_code . '-' . $unit_part . '-' . str_pad($count_part, 3, '0', STR_PAD_LEFT);
+            
+            $fa->update([
+                "id_lokasi" => $request->id_lokasi,
+                "id_institusi" => $request->instansi,
+                "id_ruang" => $request->id_ruang,
+                "kode_fa" => $new_kode_fa,
+            ]);
+            
+            $redirectKode = $new_kode_fa;
+        } 
+        // If only some units are being transferred
+        else {
+            // Update the existing record with reduced quantity AND update its kode_fa
+            $remainingUnits = $originalUnits - $requestedUnits;
+            $updated_original_kode_fa = $original_base_code . '-' . $unit_part . '-' . str_pad($remainingUnits, 3, '0', STR_PAD_LEFT);
+            
+            $fa->update([
+                "jumlah_unit" => $remainingUnits,
+                "kode_fa" => $updated_original_kode_fa
+            ]);
+            
+            // Create a new record for the transferred units
+            $new_kode_fa = $new_base_code . '-' . $unit_part . '-' . str_pad($requestedUnits, 3, '0', STR_PAD_LEFT);
+            
+            // Generate a new unique ID using timestamp
+            $new_id_fa = 'FA' . time() . rand(1000, 9999);
+            
+            // Use DB::statement to execute a raw SQL insert with the new ID
+            $sql = "INSERT INTO fixed_assets (
+                id_fa, id_institusi, id_divisi, id_tipe, id_kelompok, id_jenis, 
+                id_lokasi, id_ruang, no_permintaan, tahun_diterima, 
+                foto_barang, jumlah_unit, unit_asal, kode_fa, 
+                nama_barang, des_barang, status_transaksi, status_barang, 
+                id_user, status_fa, file_pdf, created_at, updated_at
+            ) VALUES (
+                ?, ?, ?, ?, ?, ?, 
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?,
+                ?, ?, ?, ?, ?
+            )";
+            
+            DB::statement($sql, [
+                $new_id_fa,
+                $request->instansi,
+                $fa->id_divisi,
+                $fa->id_tipe,
+                $fa->id_kelompok,
+                $fa->id_jenis,
+                $request->id_lokasi,
+                $request->id_ruang,
+                $fa->no_permintaan,
+                $fa->tahun_diterima,
+                $fa->foto_barang,
+                $requestedUnits,
+                $fa->unit_asal,
+                $new_kode_fa,
+                $fa->nama_barang,
+                $fa->des_barang,
+                $fa->status_transaksi,
+                $fa->status_barang,
+                $fa->id_user,
+                $fa->status_fa,
+                $fa->file_pdf,
+                now(),
+                now()
+            ]);
+            
+            $redirectKode = $new_kode_fa;
+        }
+        
+        DB::commit();
+        return redirect()->route("manageaset.detail", ['kode_fa' => $redirectKode])
+            ->with(['success' => 'Pemindahan Aset Berhasil Dilakukan. Kode Aset Telah Diperbarui']);
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        return redirect()->back()
+            ->withInput()
+            ->withErrors('Terjadi kesalahan saat memindahkan aset: ' . $e->getMessage());
+    }
+}
+
 public function detailbarcode($kode_fa, $kode_baru = null)
     {
         if($kode_baru == null){
