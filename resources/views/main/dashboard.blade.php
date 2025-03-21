@@ -91,7 +91,7 @@
                 <div class="col-lg-3 col-6">
                     <div class="small-box bg-danger shadow rounded">
                         <div class="inner">
-                            <h3>{{ $fixedAssetCount }}</h3>
+                            <h3>0</h3>
                             <p class="lead">PERMINTAAN NON FIXED ASET (NFA)</p>
                         </div>
                         <div class="icon">

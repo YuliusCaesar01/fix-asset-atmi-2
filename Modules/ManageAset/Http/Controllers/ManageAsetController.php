@@ -799,20 +799,20 @@ public function getJenisByKelompok1($kelompokId)
 
     DB::beginTransaction();
     try {
-        // Handle photo upload
-        if ($request->hasFile('foto_barang')) {
-            if ($fa->foto_barang) {
-                Storage::disk('public')->delete('fotofixaset/' . $fa->foto_barang);
-            }
-
-            $file = $request->file('foto_barang');
-            $fileName = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('fotofixaset', $fileName, 'public');
-
-            $fa->foto_barang = $fileName;
-        } else {
-            $fileName = $fa->foto_barang;
+       // Handle photo upload
+       if ($request->hasFile('foto_barang')) {
+        if ($fa->foto_barang && file_exists(public_path('fotofixaset/' . $fa->foto_barang))) {
+            unlink(public_path('fotofixaset/' . $fa->foto_barang));
         }
+    
+        $file = $request->file('foto_barang');
+        $fileName = time() . '_' . $file->getClientOriginalName();
+        $file->move(public_path('fotofixaset'), $fileName);
+    
+        $fa->foto_barang = $fileName;
+    } else {
+        $fileName = $fa->foto_barang;
+    }
 
          // Retrieve required codes
          $kode_institusi = Institusi::findOrFail($request->instansi)->kode_institusi;

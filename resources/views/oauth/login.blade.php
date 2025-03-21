@@ -2,16 +2,57 @@
 @section('title', 'Login')
 
 @section('content')
+<style>
+    body {
+        position: relative;
+        height: 100vh;
+        overflow: hidden;
+    }
+    
+    body::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("{{ asset('atmisolo.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        filter: blur(5px); /* Adds blur to the background image */
+        z-index: -1;
+    }
+    
+    .login-box {
+        margin-top: 20px;
+        position: relative;
+        z-index: 1;
+    }
+    
+    .card {
+        background-color: rgba(255, 255, 255, 0.756); /* Semi-transparent white background */
+        box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
+    }
+    
+    .login-card-body {
+        background-color: transparent;
+    }
+    
+    .navbar-brand-image {
+        filter: drop-shadow(0px 0px 5px rgba(255, 255, 255, 0.7));
+    }
+</style>
     <div class="login-box">
-        <div class="login-logo">
-            <a href="#">
-                <img src="{{ asset('fixaset.png') }}" width="200" alt="Logo" class="navbar-brand-image">
-            </a>
-        </div>
-        
         <div class="card">
             <div class="card-body card-primary login-card-body">
-                <h2 class="text-center mb-4">Sign in to your account</h2>
+                <div class="login-logo">
+                    <a href="#">
+                        <img src="{{ asset('logologin.png') }}" width="250" alt="Logo" class="navbar-brand-image">
+                    </a>
+                </div>
+                <h2 class="text-center mb-4">ACCOUNT LOGIN</h2>
                 
                 @if (session('success'))
                     <div class="alert alert-primary">{{ session('success') }}</div>
@@ -58,14 +99,14 @@
 
                 <hr>
 
-                <div class="social-auth-links text-center mb-3">
+                {{-- <div class="social-auth-links text-center mb-3">
                     <p>- OR -</p>
                     <form action="{{ route('oauth.google') }}" method="GET">
                         <button type="submit" class="btn btn-google btn-block">
                             <i class="fab fa-google mr-2"></i> Login with Google
                         </button>
                     </form>
-                </div>
+                </div> --}}
 
                 <div class="text-center">
                     <p class="mb-1">

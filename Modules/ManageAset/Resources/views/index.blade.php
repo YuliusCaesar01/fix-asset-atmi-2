@@ -196,7 +196,7 @@
                                                 @endrole
                                                 <!-- Tombol Delete -->
                                               
-                                                @role('pimpinanunitkarya')
+                                                @role('direkturmanagementaset|superadmin')
                                                 <form action="{{ route('manageaset.destroy', $ast->id_fa) }}" method="POST" style="display:inline;" id="delete-form-{{ $ast->id_fa }}">
                                                     @csrf
                                                     @method('DELETE')

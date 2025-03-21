@@ -54,6 +54,7 @@
                         <div class="col-12 col-sm-6">
                             <h4 class="my-3 d-flex align-items-center justify-content-between">
                                 <b>KODE: <span class="badge bg-info fs-6">{{ $fa->kode_fa }}</span></b>
+                                @role('manageraset|superadmin')
                                 <div class="d-flex">
                                     <a href="{{ route('manage-fixaset.edit', $fa->id_fa) }}" class="btn btn-sm btn-outline-primary me-1">
                                         Edit <i class="fas fa-edit"></i>
@@ -62,6 +63,7 @@
                                         Pindah Aset <i class="fas fa-cog"></i>
                                     </a>
                                 </div>
+                                @endrole
                             </h4>                            
                             <hr>
                             <h5>Kategori Barang</h5>
