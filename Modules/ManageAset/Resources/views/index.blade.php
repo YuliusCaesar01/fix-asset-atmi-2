@@ -53,22 +53,13 @@
                                         </select>
                                     </div>
                                 </div>
-                            
+                                
                                 <!-- Institution Filter -->
-                                <div class="col-md-4">
+                                <div class="col-4">
                                     <div class="form-group">
-                                        <label for="institusi_input" class="form-label fw-bold">Institusi</label>
-                                        <select id="institusi_input" 
-                                                name="id_institusi" 
-                                                class="form-control">
-                                            <option value="">-- Pilih Institusi --</option>
-                                            @foreach ($institusi as $ins)
-                                                <option value="{{ $ins->id_institusi }}"
-                                                        {{ isset($selectedValues['institusi']) && $selectedValues['institusi']->id_institusi == $ins->id_institusi ? 'selected' : '' }}>
-                                                    {{ $ins->nama_institusi }}
-                                                </option>
-                                            @endforeach
-                                        </select>
+                                        <label>Institusi</label>
+                                        <input type="text" id="institusi_display" class="form-control" value="{{ $institusi->first()->nama_institusi ?? 'N/A' }}" readonly>
+                                        <input type="hidden" id="institusi_input" name="id_institusi" value="{{ $institusi->first()->id_institusi ?? '' }}">
                                     </div>
                                 </div>
                             
@@ -260,25 +251,46 @@
     
 <script>
     $(document).ready(function() {
-        let debounceTimer;
-        let isLoadingData = false;
+    let debounceTimer;
+    let isLoadingData = false;
+    
+    // Function to debounce form submission
+    function debounceSubmit(func, delay) {
+        clearTimeout(debounceTimer);
+        debounceTimer = setTimeout(func, delay);
+    }
+
+    // Function to submit form
+    function submitForm() {
+        if (!isLoadingData) {
+            document.getElementById('filterForm').submit();
+        }
+    }
+
+    // Get the default institusi value
+    const defaultInstitusiId = $('#institusi_input').val();
+    
+    // Check if we need to apply the filter automatically
+    // We'll apply it if: 
+    // 1. We have a default institution value
+    // 2. The current URL doesn't already have the institusi filter parameter
+    const currentUrl = new URL(window.location.href);
+    const hasInstitusiParam = currentUrl.searchParams.has('id_institusi');
+    
+    if (defaultInstitusiId && !hasInstitusiParam) {
+        // Manually update the form's action URL to include the institusi filter
+        const form = document.getElementById('filterForm');
+        const formUrl = new URL(form.action);
+        formUrl.searchParams.set('id_institusi', defaultInstitusiId);
+        form.action = formUrl.toString();
         
-        // Function to debounce form submission
-        function debounceSubmit(func, delay) {
-            clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(func, delay);
-        }
-    
-        // Function to submit form
-        function submitForm() {
-            if (!isLoadingData) {
-                document.getElementById('filterForm').submit();
-            }
-        }
-    
-        // Initial load of dependent dropdowns
-        if ($('#institusi_input').val()) {
-            loadRuangData($('#institusi_input').val(), false);
+        // Submit the form once to apply the default filter
+        submitForm();
+    } else {
+        // If we're already filtering or there's no default value,
+        // just load dependent dropdowns as needed
+        if (defaultInstitusiId) {
+            loadRuangData(defaultInstitusiId, false);
         }
         
         if ($('#kelompok_input').val()) {
@@ -288,157 +300,179 @@
         if ($('#jenis_input').val()) {
             loadTipeData($('#jenis_input').val(), false);
         }
-    
-        // Add change event listeners for all select elements
-        $('#filterForm select').on('change', function() {
-            const selectId = $(this).attr('id');
-            
-            // Set loading flag
-            isLoadingData = true;
-            
-            // Handle dependent dropdowns
-            if (selectId === 'institusi_input') {
-                loadRuangData($(this).val(), true);
-            } else if (selectId === 'kelompok_input') {
-                loadJenisData($(this).val(), true);
-            } else if (selectId === 'jenis_input') {
-                loadTipeData($(this).val(), true);
-            } else {
-                // For non-dependent dropdowns, submit immediately
+    }
+
+    // Add change event listeners for all select elements
+    $('#filterForm select').on('change', function() {
+        const selectId = $(this).attr('id');
+        
+        // Set loading flag
+        isLoadingData = true;
+        
+        // Handle dependent dropdowns
+        if (selectId === 'kelompok_input') {
+            loadJenisData($(this).val(), true);
+        } else if (selectId === 'jenis_input') {
+            loadTipeData($(this).val(), true);
+        } else {
+            // For non-dependent dropdowns, submit immediately
+            isLoadingData = false;
+            debounceSubmit(submitForm, 500);
+        }
+    });
+
+    // Function to load Ruang data
+    function loadRuangData(institusiId, shouldSubmit = true) {
+        $('#ruang_input').empty().append('<option value="">-- Pilih Ruang --</option>');
+        
+        if (!institusiId) {
+            isLoadingData = false;
+            if (shouldSubmit) debounceSubmit(submitForm, 500);
+            return;
+        }
+
+        $.ajax({
+            url: '{{ route("getRoomsByInstitution") }}',
+            type: 'GET',
+            data: { id_institusi: institusiId },
+            success: function(response) {
+                if (response && response.length > 0) {
+                    response.forEach(function(room) {
+                        let selected = @json(isset($selectedValues['ruang']) ? $selectedValues['ruang']->id_ruang : null) == room.id_ruang;
+                        $('#ruang_input').append(
+                            $('<option></option>')
+                                .val(room.id_ruang)
+                                .text(room.nama_ruang)
+                                .prop('selected', selected)
+                        );
+                    });
+                }
                 isLoadingData = false;
-                debounceSubmit(submitForm, 500);
+                if (shouldSubmit) debounceSubmit(submitForm, 500);
+            },
+            error: function() {
+                isLoadingData = false;
+                if (shouldSubmit) debounceSubmit(submitForm, 500);
             }
         });
-    
-        // Function to load Ruang data
-        function loadRuangData(institusiId, shouldSubmit = true) {
-            $('#ruang_input').empty().append('<option value="">-- Pilih Ruang --</option>');
-            
-            if (!institusiId) {
-                isLoadingData = false;
-                if (shouldSubmit) debounceSubmit(submitForm, 500);
-                return;
-            }
-    
-            $.ajax({
-                url: '{{ route("getRoomsByInstitution") }}',
-                type: 'GET',
-                data: { id_institusi: institusiId },
-                success: function(response) {
-                    if (response && response.length > 0) {
-                        response.forEach(function(room) {
-                            let selected = @json(isset($selectedValues['ruang']) ? $selectedValues['ruang']->id_ruang : null) == room.id_ruang;
-                            $('#ruang_input').append(
-                                $('<option></option>')
-                                    .val(room.id_ruang)
-                                    .text(room.nama_ruang)
-                                    .prop('selected', selected)
-                            );
-                        });
-                    }
-                    isLoadingData = false;
-                    if (shouldSubmit) debounceSubmit(submitForm, 500);
-                },
-                error: function() {
-                    isLoadingData = false;
-                    if (shouldSubmit) debounceSubmit(submitForm, 500);
-                }
-            });
+    }
+
+    // The rest of the functions remain the same
+    function loadJenisData(kelompokId, shouldSubmit = true) {
+        $('#jenis_input').empty().append('<option value="">-- Pilih Jenis --</option>');
+        $('#tipe_input').empty().append('<option value="">-- Pilih Tipe --</option>');
+        
+        if (!kelompokId) {
+            isLoadingData = false;
+            if (shouldSubmit) debounceSubmit(submitForm, 500);
+            return;
         }
-    
-        // Function to load Jenis data
-        function loadJenisData(kelompokId, shouldSubmit = true) {
-            $('#jenis_input').empty().append('<option value="">-- Pilih Jenis --</option>');
-            $('#tipe_input').empty().append('<option value="">-- Pilih Tipe --</option>');
-            
-            if (!kelompokId) {
-                isLoadingData = false;
-                if (shouldSubmit) debounceSubmit(submitForm, 500);
-                return;
-            }
-    
-            $.ajax({
-                url: '{{ route("getJenisByKelompok3") }}',
-                type: 'GET',
-                data: { id_kelompok: kelompokId },
-                success: function(response) {
-                    if (response && response.length > 0) {
-                        response.forEach(function(jenis) {
-                            let selected = @json(isset($selectedValues['jenis']) ? $selectedValues['jenis']->id_jenis : null) == jenis.id_jenis;
-                            $('#jenis_input').append(
-                                $('<option></option>')
-                                    .val(jenis.id_jenis)
-                                    .text(jenis.nama_jenis_yayasan)
-                                    .prop('selected', selected)
-                            );
-                        });
-                        
-                        // If there was a previously selected jenis, load its types
-                        if ($('#jenis_input').val()) {
-                            loadTipeData($('#jenis_input').val(), shouldSubmit);
-                        } else {
-                            isLoadingData = false;
-                            if (shouldSubmit) debounceSubmit(submitForm, 500);
-                        }
+
+        $.ajax({
+            url: '{{ route("getJenisByKelompok3") }}',
+            type: 'GET',
+            data: { id_kelompok: kelompokId },
+            success: function(response) {
+                if (response && response.length > 0) {
+                    response.forEach(function(jenis) {
+                        let selected = @json(isset($selectedValues['jenis']) ? $selectedValues['jenis']->id_jenis : null) == jenis.id_jenis;
+                        $('#jenis_input').append(
+                            $('<option></option>')
+                                .val(jenis.id_jenis)
+                                .text(jenis.nama_jenis_yayasan)
+                                .prop('selected', selected)
+                        );
+                    });
+                    
+                    // If there was a previously selected jenis, load its types
+                    if ($('#jenis_input').val()) {
+                        loadTipeData($('#jenis_input').val(), shouldSubmit);
                     } else {
                         isLoadingData = false;
                         if (shouldSubmit) debounceSubmit(submitForm, 500);
                     }
-                },
-                error: function() {
+                } else {
                     isLoadingData = false;
                     if (shouldSubmit) debounceSubmit(submitForm, 500);
                 }
-            });
-        }
-    
-        // Function to load Tipe data
-        function loadTipeData(jenisId, shouldSubmit = true) {
-            $('#tipe_input').empty().append('<option value="">-- Pilih Tipe --</option>');
-            
-            if (!jenisId) {
+            },
+            error: function() {
                 isLoadingData = false;
                 if (shouldSubmit) debounceSubmit(submitForm, 500);
-                return;
             }
-    
-            $.ajax({
-                url: '{{ route("getTipeByJenis1") }}',
-                type: 'GET',
-                data: { id_jenis: jenisId },
-                success: function(response) {
-                    if (response && response.length > 0) {
-                        response.forEach(function(tipe) {
-                            let selected = @json(isset($selectedValues['tipe']) ? $selectedValues['tipe']->id_tipe : null) == tipe.id_tipe;
-                            $('#tipe_input').append(
-                                $('<option></option>')
-                                    .val(tipe.id_tipe)
-                                    .text(tipe.nama_tipe_yayasan)
-                                    .prop('selected', selected)
-                            );
-                        });
-                    }
-                    isLoadingData = false;
-                    if (shouldSubmit) debounceSubmit(submitForm, 500);
-                },
-                error: function() {
-                    isLoadingData = false;
-                    if (shouldSubmit) debounceSubmit(submitForm, 500);
-                }
-            });
-        }
-    
-        // Reset filters function
-        window.resetFilters = function() {
+        });
+    }
+
+    function loadTipeData(jenisId, shouldSubmit = true) {
+        $('#tipe_input').empty().append('<option value="">-- Pilih Tipe --</option>');
+        
+        if (!jenisId) {
             isLoadingData = false;
-            const selects = document.querySelectorAll('#filterForm select');
-            selects.forEach(select => {
-                select.value = '';
-            });
-            submitForm();
+            if (shouldSubmit) debounceSubmit(submitForm, 500);
+            return;
         }
-    });
-    </script>
+
+        $.ajax({
+            url: '{{ route("getTipeByJenis1") }}',
+            type: 'GET',
+            data: { id_jenis: jenisId },
+            success: function(response) {
+                if (response && response.length > 0) {
+                    response.forEach(function(tipe) {
+                        let selected = @json(isset($selectedValues['tipe']) ? $selectedValues['tipe']->id_tipe : null) == tipe.id_tipe;
+                        $('#tipe_input').append(
+                            $('<option></option>')
+                                .val(tipe.id_tipe)
+                                .text(tipe.nama_tipe_yayasan)
+                                .prop('selected', selected)
+                        );
+                    });
+                }
+                isLoadingData = false;
+                if (shouldSubmit) debounceSubmit(submitForm, 500);
+            },
+            error: function() {
+                isLoadingData = false;
+                if (shouldSubmit) debounceSubmit(submitForm, 500);
+            }
+        });
+    }
+
+    // Reset filters function - updated to maintain institusi filter
+    window.resetFilters = function() {
+        isLoadingData = false;
+        
+        // Get the form and URL
+        const form = document.getElementById('filterForm');
+        const formUrl = new URL(form.action);
+        
+        // Keep only the institusi parameter
+        Array.from(formUrl.searchParams.keys()).forEach(key => {
+            if (key !== 'id_institusi') {
+                formUrl.searchParams.delete(key);
+            }
+        });
+        
+        // Make sure the institusi parameter is set
+        if (defaultInstitusiId && !formUrl.searchParams.has('id_institusi')) {
+            formUrl.searchParams.set('id_institusi', defaultInstitusiId);
+        }
+        
+        // Update the form action and submit
+        form.action = formUrl.toString();
+        
+        // Reset all select elements except institusi
+        const selects = document.querySelectorAll('#filterForm select');
+        selects.forEach(select => {
+            if (select.id !== 'institusi_input') {
+                select.value = '';
+            }
+        });
+        
+        submitForm();
+    }
+});
+</script>
     <!-- Page specific script -->
     <script>
         $(document).ready(function() {

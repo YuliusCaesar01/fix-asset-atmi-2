@@ -59,8 +59,11 @@
                                     <a href="{{ route('manage-fixaset.edit', $fa->id_fa) }}" class="btn btn-sm btn-outline-primary me-1">
                                         Edit <i class="fas fa-edit"></i>
                                     </a>
-                                    <a href="{{ route('manageaset.pindahaset', $fa->kode_fa) }}" class="btn btn-sm btn-outline-primary">
+                                    <a href="{{ route('manageaset.pindahaset', $fa->kode_fa) }}" class="btn btn-sm btn-outline-primary me-1">
                                         Pindah Aset <i class="fas fa-cog"></i>
+                                    </a>
+                                    <a href="{{ route('manageaset.pindahaset', $fa->kode_fa) }}" class="btn btn-sm btn-outline-primary">
+                                        Pindah Aset <i class="fa fa-image"></i>
                                     </a>
                                 </div>
                                 @endrole

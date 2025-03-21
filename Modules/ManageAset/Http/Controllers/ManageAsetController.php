@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use Endroid\QrCode\Writer\PngWriter;
+use Illuminate\Support\Facades\Auth;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Contracts\Support\Renderable;
@@ -35,8 +36,14 @@ class ManageAsetController extends Controller
     protected $menu = 'Aset';
 
     public function index(Request $request)
-{
-    $institusi = Institusi::where('id_institusi', '!=', 8)->get();
+{   
+    $user = Auth::user(); // Retrieve the authenticated user
+
+    if (!$user) {
+        return redirect()->route('login')->with('error', 'Anda harus login terlebih dahulu.');
+    }
+
+    $institusi = Institusi::where('id_institusi', $user->id_institusi)->get();
     $tipe = Tipe::all();
     $lokasi = Lokasi::all();
     $kelompok = Kelompok::all();
@@ -326,8 +333,11 @@ public function getRoomsByInstitution(Request $request)
         }
         
         DB::commit();
-        return redirect()->route("manageaset.detail", ['kode_fa' => $redirectKode])
-            ->with(['success' => 'Pemindahan Aset Berhasil Dilakukan. Kode Aset Telah Diperbarui']);
+    // Add a query parameter to force refresh
+    $redirectUrl = route("manageaset.detail", ['kode_fa' => $redirectKode, 'refresh' => time()]);
+    return redirect($redirectUrl)
+        ->with(['success' => 'Pemindahan Aset Berhasil Dilakukan. Kode Aset Telah Diperbarui']);
+
 
     } catch (\Exception $e) {
         DB::rollback();
